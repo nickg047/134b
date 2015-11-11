@@ -1,3 +1,1 @@
-# README #
-
-CSE 134B HW4 BitBucket Repository
+CSE 134B Github Repo
