@@ -38,7 +38,7 @@
 					<span id="times">times</span>
 				</div>
 				<p><label><span id="others_text">Others: </span><input id="others" type="text" name="day" placeholder="More than 3 times"></label></p>
-				<p id="save_p"><input id="save" type="button" value="Save It" onclick="location.href='list.html'; addHabit();"></p>
+				<p id="save_p"><input id="save" type="button" value="Save It" onclick="location.href='list.html'; addFromUI();"></p>
 				
 			</form>
 
@@ -54,45 +54,47 @@
                 image = document.getElementById(name);
                 image.style.border = "5px solid #42A5F5";
             }
-
-            function addHabit() {       
-                if ('localStorage' in window && window['localStorage'] !== null) {
-			        try {
-			            //Get stored data
-			            var habits = JSON.parse(localStorage.getItem('Habits'));
-			            var i;
-			            if (habits === null) {
-			                //If no stored data, create empty array
-			                habits = [];
-			                i = 0;
-			            }
-			            else {
-			            	i = habits[habits.length-1].id + 1;
-			            }
-
-			            //Create new user entry
-			            var habit = {
+            /*
+            	gets variables for habit from html form
+            */
+            function addFromUI() {
+            	var habits = JSON.parse(localStorage.getItem('Habits'));
+		            var i;
+		            if (habits === null) {		     
+		                i = 0;
+		            }
+		            else {
+		            	i = habits[habits.length-1].id + 1;
+		            }
+            	var habit = {
 			            	id: i,
 			                title: document.getElementById('title').value,
 			                image: image.id,
 			                weekFreq: getCheckedBoxes('date'),
 			                dailyFreq: getCheckedBoxes('day'),
 			                other: document.getElementById('others').value
-			            };
+			            	};
+			    addHabit(habit);
+            }
+            /*
+            	gets called from addFromUI() 
+            	habit: habit to be added 
+            */
+            function addHabit(habit) {       
+                		        
+	            //Get stored data
+	            var habits = JSON.parse(localStorage.getItem('Habits'));
+	     		if (habits === null) {
+	                //If no stored data, create empty array
+	                habits = [];
+	            }
 
-			            //Add new entry to stored array
-			            habits.push(habit);
+	            //Add new entry to stored array
+	            habits.push(habit);
 
-			            //Save array
-			            localStorage.setItem("Habits", JSON.stringify(habits));
-			            return true;
-
-			        } catch (e) {
-			            alert(e);
-			        }
-			    } else {
-			        alert('Cannot store user preferences as your browser do not support local storage');
-			    }
+	            //Save array
+	            localStorage.setItem("Habits", JSON.stringify(habits));
+	            return true;		        			    
             }
             function getCheckedBoxes(chkboxName) {
                 var checkboxes = document.getElementsByName(chkboxName);

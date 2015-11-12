@@ -113,6 +113,10 @@
 
 
         }
+        /*
+            only works with backend
+            id_param: id of the habit to be deleted
+        */
         function deleteHabitLS(id_param){
             var habits = JSON.parse(localStorage.getItem("Habits"));
             var removed = false;
@@ -135,6 +139,9 @@
             else {
                 alert("id does not exist");
             }
+        }
+        function getAllHabits() {
+            return JSON.parse(localStorage.getItem("Habits"));
         }
     </script>
 </body>
