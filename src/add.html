@@ -38,20 +38,72 @@
 					<span id="times">times</span>
 				</div>
 				<p><label><span id="others_text">Others: </span><input id="others" type="text" name="day" placeholder="More than 3 times"></label></p>
-				<p id="save_p"><input id="save" type="button" value="Save It" onclick="location.href='list.html'"></p>
+				<p id="save_p"><input id="save" type="button" value="Save It" onclick="location.href='list.html'; storeHabit();"></p>
 				
 			</form>
 
 		</div>
 		<script>
-			function selectImage(name) {
-				//Clear all the other effects
-				document.getElementById('icon1').style.border = "none";
-				document.getElementById('icon2').style.border = "none";
-				document.getElementById('icon3').style.border = "none";
-				var image = document.getElementById(name);
-				image.style.border = "5px solid #42A5F5";
-			}
+		    image = null;
+
+            function selectImage(name) {
+            //Clear all the other effects
+                document.getElementById('icon1').style.border = "none";
+                document.getElementById('icon2').style.border = "none";
+                document.getElementById('icon3').style.border = "none";
+                image = document.getElementById(name);
+                image.style.border = "5px solid #42A5F5";
+            }
+
+            function storeHabit() {       
+                if ('localStorage' in window && window['localStorage'] !== null) {
+			        try {
+			            //Get stored data
+			            var habits = JSON.parse(localStorage.getItem('Habits'));
+			            var i;
+			            if (habits === null) {
+			                //If no stored data, create empty array
+			                habits = [];
+			                i = 0;
+			            }
+			            else {
+			            	i = habits[habits.length-1].id + 1;
+			            }
+
+			            //Create new user entry
+			            var habit = {
+			            	id: i,
+			                title: document.getElementById('title').value,
+			                image: image.id,
+			                weekFreq: getCheckedBoxes('date'),
+			                dailyFreq: getCheckedBoxes('day'),
+			                test: "test"
+			            };
+
+			            //Add new entry to stored array
+			            habits.push(habit);
+
+			            //Save array
+			            localStorage.setItem("Habits", JSON.stringify(habits));
+			            return true;
+
+			        } catch (e) {
+			            alert("error");
+			        }
+			    } else {
+			        alert('Cannot store user preferences as your browser do not support local storage');
+			    }
+            }
+            function getCheckedBoxes(chkboxName) {
+                var checkboxes = document.getElementsByName(chkboxName);
+                var checkboxesChecked = [];
+                for (var i=0; i<checkboxes.length; i++) {
+                    if (checkboxes[i].checked) {
+                        checkboxesChecked.push(checkboxes[i].value);
+                    }
+                }
+                return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+            }
 		</script>
 	</body>
 </html>
