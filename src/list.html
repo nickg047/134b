@@ -110,6 +110,31 @@
             var child = element.parentNode.parentNode;
             var parent = child.parentNode;
             parent.removeChild(child);
+
+
+        }
+        function deleteHabitLS(id_param){
+            var habits = JSON.parse(localStorage.getItem("Habits"));
+            var removed = false;
+            for (var i = 0; i < habits.length; i++){
+                habit = habits[i];
+                if(habit.id === id_param) {
+                    habits.splice(i, 1);
+                    removed = true;
+                    break;
+                }
+            }
+            if(removed === true) {
+                if(habits.length === 0) {
+                    localStorage.removeItem("Habits");
+                }
+                else {
+                    localStorage.setItem("Habits", JSON.stringify(habits));
+                }
+            }
+            else {
+                alert("id does not exist");
+            }
         }
     </script>
 </body>

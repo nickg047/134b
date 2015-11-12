@@ -38,7 +38,7 @@
 					<span id="times">times</span>
 				</div>
 				<p><label><span id="others_text">Others: </span><input id="others" type="text" name="day" placeholder="More than 3 times"></label></p>
-				<p id="save_p"><input id="save" type="button" value="Save It" onclick="location.href='list.html'; storeHabit();"></p>
+				<p id="save_p"><input id="save" type="button" value="Save It" onclick="location.href='list.html'; addHabit();"></p>
 				
 			</form>
 
@@ -55,7 +55,7 @@
                 image.style.border = "5px solid #42A5F5";
             }
 
-            function storeHabit() {       
+            function addHabit() {       
                 if ('localStorage' in window && window['localStorage'] !== null) {
 			        try {
 			            //Get stored data
@@ -77,7 +77,7 @@
 			                image: image.id,
 			                weekFreq: getCheckedBoxes('date'),
 			                dailyFreq: getCheckedBoxes('day'),
-			                test: "test"
+			                other: document.getElementById('others').value
 			            };
 
 			            //Add new entry to stored array
@@ -88,7 +88,7 @@
 			            return true;
 
 			        } catch (e) {
-			            alert("error");
+			            alert(e);
 			        }
 			    } else {
 			        alert('Cannot store user preferences as your browser do not support local storage');
