@@ -19,9 +19,10 @@ body{
 .habit-name{margin:0; padding:0; height:100%; display:inline-block; vertical-align: middle; line-height:60px;color:#888;font-size: 24px;}
 .habit-icon{margin:0; border-radius:5px;width:100px; height:100px;}
 
-.message{position:absolute; display:inline-block; visibility: hidden; text-align:center; color:#888;}
-.message-total{visibility: visible;}
-.message-total>svg{margin: 15px auto;}
+.message{position:absolute; display:inline-block; visibility: inherit; text-align:center; color:#888;}
+.message-total{visibility: inherit;}
+.message-today{visibility: hidden;}
+.message-total>svg{margin: 15px auto; visibility:inherit;}
 
 /* operations (for a existing habit) */
 .habit-op{position:absolute; right:5px;display:inline-block; height: 100%; line-height: 60px;width:100%;text-align:center;top:170px;margin:0 auto;}
