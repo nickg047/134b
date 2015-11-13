@@ -2,8 +2,20 @@ Parse.initialize("lSrD6K2YbBIZKM7H8VMS43nY1ekjsEohi1RNY7Iu", "c3iXu7MDpI5guDqlEg
 
 
 function onClickSignUp() {
-  var signUpText = document.getElementById("signInMessage");
-  signUpText.style.display = 'block';
+	var user = Parse.User();
+	var screenname = getUser();
+	user.set("username", screenname);
+	user.set("password", getPassword());
+	uesr.set("email", screenname);
+	user.signUp(null, {
+		success: function(user) {
+			onSignupSuccess();
+		},
+		error: function(user, error) {
+			onSignupFailure(user, error);
+		}
+	} );
+  
 }
 
 function getUser(){
@@ -32,5 +44,14 @@ function successfulSignup(){
 }
 
 function failedSignup(user, error){
-	window.alert('failure');
+	alert('failure');
+}
+
+function onSignupSuccess(){
+	var signUpText = document.getElementById("signInMessage");
+	signUpText.style.display = 'block';
+}
+
+function onSignupFailure(user, error){    alert("Error: " + error.code + " " + error.message);
+
 }
