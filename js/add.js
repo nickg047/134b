@@ -1,0 +1,61 @@
+image = null;
+
+function selectImage(name) {
+//Clear all the other effects
+    document.getElementById('icon1').style.border = "none";
+    document.getElementById('icon2').style.border = "none";
+    document.getElementById('icon3').style.border = "none";
+    image = document.getElementById(name);
+    image.style.border = "5px solid #42A5F5";
+}
+/*
+	gets variables for habit from html form
+*/
+function addFromUI() {
+	var habits = JSON.parse(localStorage.getItem('Habits'));
+    var i;
+    if (habits === null) {
+        i = 0;
+    }else {
+        i = habits[habits.length-1].id + 1;
+    }
+	var habit = {
+        id: i,
+        title: document.getElementById('title').value,
+                image: image.src,
+                weekFreq: getCheckedBoxes('date'),
+                dailyFreq: getCheckedBoxes('day'),
+                other: document.getElementById('others').value
+            	};
+    addHabit(habit);
+}
+/*
+	gets called from addFromUI() 
+	habit: habit to be added 
+*/
+function addHabit(habit) {       
+    		        
+    //Get stored data
+    var habits = JSON.parse(localStorage.getItem('Habits'));
+		if (habits === null) {
+        //If no stored data, create empty array
+        habits = [];
+    }
+
+    //Add new entry to stored array
+    habits.push(habit);
+
+    //Save array
+    localStorage.setItem("Habits", JSON.stringify(habits));
+    return true;		        			    
+}
+function getCheckedBoxes(chkboxName) {
+    var checkboxes = document.getElementsByName(chkboxName);
+    var checkboxesChecked = [];
+    for (var i=0; i<checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            checkboxesChecked.push(checkboxes[i].value);
+        }
+    }
+    return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+}
