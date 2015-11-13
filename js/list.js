@@ -1,7 +1,6 @@
 //On load update the UI displayed for all habits if allowed
 function updateHabitUI(){
-    alert('hi');
-    var habits = localStorage.getItem("Habits");
+    var habits = JSON.parse(localStorage.getItem("Habits"));
     if (!habits){
         habits = [];
         localStorage.setItem("Habits", JSON.stringify(habits));
@@ -9,22 +8,42 @@ function updateHabitUI(){
     }
     var el;
     var listItem;
-    var list = document.getElementById('habitlist');
+    var list = document.getElementById('habit-list');
+    if(habits.length > 0 && habits[0].id == 0){
+        detailHabit(0);
+    }
+    if(habits.length > 1 && habits[1].id == 1){
+        detailHabit(1);
+    }
+    else{
+        list.children[1].style.visibility = "hidden";
+    }
+    if(habits.length > 2 && habits[2].id == 2){
+        detailHabit(2);
+    }
+    else{
+        list.children[2].style.visibility = "hidden";
+    }
+/*
     for (var habit in habits){
         listItem = makeHabit(habit);
         list.appendChild(listItem);
     }
+*/
+    //alert('hi');
 }
 
 updateHabitUI();
 	
 function makeHabit(habit){
     var listItem = document.createElement('li');
-    listItem.innerHTML = '<ul class="habit-info">
+    /*
+    listItem.innerHTML = "<ul class="habit-info">
                 <li><div class="habit-name">Exercise 30 minutes</div></li>
                 <li><img class="habit-icon" src="../img/run.jpg" alt="habit icon"></li>
             </ul>
-            <div class="message">
+            
+		    <div class="message">
                 <span class="message-total">
                     <strong>48</strong> days in a row! Best Record: <strong>60</strong><br>
                     <svg height="25" width="150">
@@ -44,7 +63,8 @@ function makeHabit(habit){
                 <button type="button" id="myid" class="op op-del" onclick="deleteHabit(this);" title="delete habit">
                     <img src="../img/delete.svg" alt="Del">
                 </button>
-            </div>';
+            </div>";
+		    */
 }
 
 
@@ -58,6 +78,9 @@ function detailHabit(habitID){
     //Image
     habitMod.getElementsByClassName("habit-icon")[0].src = habitInfo.image;
     habitMod.getElementsByClassName("habit-name")[0].innerHTML.alt = habitInfo.image.substring(habitInfo.image.lastIndexOf("/")+1);
+    //Stats
+    habitMod.getElementsByClassName("message-total")[0].children[0].innerHTML = habitInfo.currentStreak;
+    habitMod.getElementsByClassName("message-total")[0].children[1].innerHTML = habitInfo.bestRecord;
     
     //Make it visible
     habitMod.parentNode.style.visibility="visible";
@@ -71,7 +94,7 @@ function isolateHabit(habitID){
         var habitString = _mainHabit.substring(_mainHabit.indexOf(_idString) -1);
         habitString = habitString.substring(0, habitString.indexOf("}")+1); 
     }
-    return JSON.parse(habitString);
+    return (JSON.parse(habitString));
 }	
 			
 function showMsg(element){
@@ -80,35 +103,55 @@ function showMsg(element){
     msgElement.style.visibility="visible";
 }
 
-function deleteHabit(element){
-    var child = element.parentNode.parentNode;
-    var parent = child.parentNode;
-    parent.removeChild(child);
-
-
+/*
+    UI update of deleting a habit
+    Called within deleteHabitLS(id_param)
+      Could put nice UI movement to make it look pretty here
+*/
+function deleteHabit(id_param){
+    updateHabitUI();
+    var habitsDelUI = JSON.parse(localStorage.getItem("Habits"));
+    if(habitsDelUI.length == 0){
+        location.href='add.html'; //If there are no habits left return to add page
+    }
+    /*
+    var habitsDelUI = JSON.parse(localStorage.getItem("Habits"));
+    //Should only expect changes from the deleted id and forward (sliding)
+    for (var i = 0; i < habitsDelUI.length; i++){
+    		detailHabit(id_param);
+		//Temp fix as the original last habit is displayed twice
+		if(i = habitsDelUI.length -1){
+		    document.getElementById(("HABIT"+id_param)).parentNode.style.visibility = "invisible";
+		}
+    }
+    */    
 }
 /*
     only works with backend
     id_param: id of the habit to be deleted
 */
 function deleteHabitLS(id_param){
-    var habits = JSON.parse(localStorage.getItem("Habits"));
+    var habitsDel = JSON.parse(localStorage.getItem("Habits"));
     var removed = false;
-    for (var i = 0; i < habits.length; i++){
-        habit = habits[i];
+    for (var i = 0; i < habitsDel.length; i++){
+        habit = habitsDel[i];
         if(habit.id === id_param) {
-            habits.splice(i, 1);
+            habitsDel.splice(i, 1);
             removed = true;
-            break;
+            i = i - 1;
         }
+		if(habit.id > id_param && removed) {
+		    habit.id = habit.id - 1; 
+		}
     }
     if(removed === true) {
-        if(habits.length === 0) {
+        if(habitsDel.length === 0) {
             localStorage.removeItem("Habits");
         }
         else {
-            localStorage.setItem("Habits", JSON.stringify(habits));
+            localStorage.setItem("Habits", JSON.stringify(habitsDel));
         }
+		deleteHabit(id_param);
     }
     else {
         alert("id does not exist");

@@ -12,9 +12,9 @@ function selectImage(name) {
 	gets variables for habit from html form
 */
 function addFromUI() {
-	var habits = JSON.parse(localStorage.getItem('Habits'));
+    var habits = JSON.parse(localStorage.getItem('Habits'));
     var i;
-    if (habits === null) {
+    if (habits.length == 0){//Is so because initialized to Habits: []
         i = 0;
     }else {
         i = habits[habits.length-1].id + 1;
