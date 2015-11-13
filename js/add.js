@@ -13,11 +13,12 @@ function selectImage(name) {
 */
 function addFromUI() {
     var habits = JSON.parse(localStorage.getItem('Habits'));
-    var i;
-    if (habits.length == 0){//Is so because initialized to Habits: []
-        i = 0;
+    var newHabitId;
+    if (habits.length === 0){//Is so because initialized to Habits: []
+        newHabitId = 0;
     }else {
-        i = habits[habits.length-1].id + 1;
+        var prevHabit = habits[habits.length-1];
+        newHabitId = prevHabit.id + 1;
     }
     var dailyCount;
     if(getCheckedBoxes('day') !== null){
@@ -27,7 +28,7 @@ function addFromUI() {
        dailyCount = [document.getElementById("others").value];
     }
 	var habit = {
-        id: i,
+        id: newHabitId,
         title: document.getElementById('title').value,
         image: image.src,
         weekFreq: getCheckedBoxes('date'),

@@ -1,73 +1,75 @@
-//On load update the UI displayed for all habits if allowed
-function updateHabitUI(){
+function getAllHabits(){
     var habits = JSON.parse(localStorage.getItem("Habits"));
     if (!habits){
         habits = [];
         localStorage.setItem("Habits", JSON.stringify(habits));
-        return;
     }
-    var el;
-    var listItem;
+    return habits;
+}
+
+function deleteHabit(habitId){
+    var habits = getAllHabits();
+    habitId = parseInt(habitId);
+    
+    for (var i = 0; i < habits.length; i++){
+        habit = habits[i];
+        if (habitId === habit.id){
+            habits.splice(i, 1);
+            break;
+        }
+    }
+    localStorage.setItem("Habits", JSON.stringify(habits));
+}
+
+function test(){
+
+}
+
+//On load update the UI displayed for all habits if allowed
+function updateHabitUI(){
+    var habits = getAllHabits();
+    console.log('what');
+    var listItem;  //type is HTML ListItem
     var list = document.getElementById('habit-list');
-    if(habits.length > 0 && habits[0].id == 0){
-        detailHabit(0);
-    }
-    if(habits.length > 1 && habits[1].id == 1){
-        detailHabit(1);
-    }
-    else{
-        list.children[1].style.visibility = "hidden";
-    }
-    if(habits.length > 2 && habits[2].id == 2){
-        detailHabit(2);
-    }
-    else{
-        list.children[2].style.visibility = "hidden";
-    }
-/*
-    for (var habit in habits){
-        listItem = makeHabit(habit);
+
+    for (var i = 0; i < habits.length; i++){
+        habit = habits[i];
+        listItem = makeHtmlElement(habit);
         list.appendChild(listItem);
     }
-*/
-    //alert('hi');
+
+    JSON.parse(localStorage.getItem("Habits"));
 }
 
 updateHabitUI();
-	
-function makeHabit(habit){
+    
+function makeHtmlElement(habit){
     var listItem = document.createElement('li');
-    /*
-    listItem.innerHTML = "<ul class="habit-info">
-                <li><div class="habit-name">Exercise 30 minutes</div></li>
-                <li><img class="habit-icon" src="../img/run.jpg" alt="habit icon"></li>
-            </ul>
-            
-		    <div class="message">
-                <span class="message-total">
-                    <strong>48</strong> days in a row! Best Record: <strong>60</strong><br>
-                    <svg height="25" width="150">
-                        <line x1="0" y1="0" x2="120" y2="0" style="stroke:rgba(65, 131, 215, 0.8);stroke-width:25"></line>
-                        <line x1="120" y1="0" x2="150" y2="0" style="stroke:rgba(171,171,171,0.6);stroke-width:25"></line>
-                    </svg>
-                </span><br>
-                <span class="message-today">Completed <strong>1/2</strong> for today!</span>
-            </div>
-            <div class="habit-op">
-                <button type="button" class="op op-done" onclick="showMsg(this);" title="done">
-                    <img src="../img/done.svg" alt="Done">
-                </button>
-                <button type="button" class="op op-edit" onclick="location.href='edit.html'" title="edit habit">
-                    <img src="../img/edit.svg" alt="Edit">
-                </button>
-                <button type="button" id="myid" class="op op-del" onclick="deleteHabit(this);" title="delete habit">
-                    <img src="../img/delete.svg" alt="Del">
-                </button>
-            </div>";
-		    */
+    listItem.id = habit.id;
+    var elementTemplate = document.getElementById('template').innerHTML;
+    listItem.innerHTML = elementTemplate;
+
+    //Title
+    listItem.getElementsByClassName("habit-name")[0].innerHTML = habit.title;
+
+    //Image
+    listItem.getElementsByClassName("habit-icon")[0].src = habit.image;
+    listItem.getElementsByClassName("habit-name")[0].innerHTML.alt = habit.image.substring(habit.image.lastIndexOf("/")+1);
+    //Stats
+    listItem.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.currentStreak;
+    listItem.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.bestRecord;
+    //----->CHANGE HERE if not supposed to use ticks
+    listItem.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habit.ticks+"/"+parseInt(habit.dailyFreq[0]);
+    
+
+    return listItem;
 }
 
-//Update the UI for an individual habit using the info from database				
+/*  
+
+makeHtmlElement should now be taking care of this
+
+//Update the UI for an individual habit using the info from database                
 function detailHabit(id_param){
     //Get the habit to modify and the database info for it
     var habitMod = document.getElementById(("HABIT"+id_param));
@@ -81,11 +83,11 @@ function detailHabit(id_param){
     habitMod.getElementsByClassName("message-total")[0].children[0].innerHTML = habitInfo.currentStreak;
     habitMod.getElementsByClassName("message-total")[0].children[1].innerHTML = habitInfo.bestRecord;
     //----->CHANGE HERE if not supposed to use ticks
-    habitMod.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habitInfo.ticks+"/"+parseInt(habitInfo.dailyFreq[0])
+    habitMod.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habitInfo.ticks+"/"+parseInt(habitInfo.dailyFreq[0]);
     
     //Make it visible
     habitMod.parentNode.style.visibility="visible";
-}
+}*/
 
 //Isolate the string and make it an object for a desire habit, called by id number
 function isolateHabit(habitID){
@@ -96,12 +98,12 @@ function isolateHabit(habitID){
         habitString = habitString.substring(0, habitString.indexOf("}")+1); 
     }
     return (JSON.parse(habitString));
-}	
+}   
 
 /*
     Used to show "completed x/y for today!" text when
     hitting the check mark
-*/			
+*/          
 function showMsg(element){
     var msgElement = (element.parentNode.parentNode.getElementsByClassName("message-today"))[0];
     //alert(msgElement.innerHTML);
@@ -137,12 +139,17 @@ function completedHabit(id_param){
     Called within deleteHabitLS(id_param)
       Could put nice UI effect to make it look pretty here
 */
-function deleteHabit(id_param){
-    updateHabitUI();
-    var habitsDelUI = JSON.parse(localStorage.getItem("Habits"));
-    if(habitsDelUI.length == 0){
-        location.href='add.html'; //If there are no habits left return to add page
-    }   
+function onDeletePress(id_param){
+    var listItem = id_param.parentNode.parentNode;
+    var listContainer = listItem.parentNode;
+
+    var id = listItem.id;
+    deleteHabit(id);
+    alert(getAllHabits().length);
+
+    listContainer.removeChild(listItem);
+    //updateHabitUI();
+     
 }
 /*
     only works with backend
@@ -152,15 +159,15 @@ function deleteHabitLS(id_param){
     var habitsDel = JSON.parse(localStorage.getItem("Habits"));
     var removed = false;
     for (var i = 0; i < habitsDel.length; i++){
-        habit = habitsDel[i];
+        var habit = habitsDel[i];
         if(habit.id === id_param) {
             habitsDel.splice(i, 1);
             removed = true;
             i = i - 1;
         }
-		if(habit.id > id_param && removed) {
-		    habit.id = habit.id - 1; 
-		}
+        if(habit.id > id_param && removed) {
+            habit.id = habit.id - 1; 
+        }
     }
     if(removed === true) {
         if(habitsDel.length === 0) {
@@ -169,12 +176,9 @@ function deleteHabitLS(id_param){
         else {
             localStorage.setItem("Habits", JSON.stringify(habitsDel));
         }
-		deleteHabit(id_param);//For UI
+        deleteHabit(id_param);//For UI
     }
     else {
         alert("id does not exist");
     }
-}
-function getAllHabits() {
-    return JSON.parse(localStorage.getItem("Habits"));
 }
