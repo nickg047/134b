@@ -23,4 +23,8 @@ function pushNotify(var strToDisplay) {
   }
 }
 
+function timerNotification(var strToDisplay, var timerSeconds){
 
+    setTimeout(myFunction, timerSeconds);
+    pushNotify(strToDisplay);
+}
