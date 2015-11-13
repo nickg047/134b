@@ -1,5 +1,10 @@
 Parse.initialize("lSrD6K2YbBIZKM7H8VMS43nY1ekjsEohi1RNY7Iu", "c3iXu7MDpI5guDqlEgr93lan7z0BoajBWSjGOU2j");
 
+if (Parse.User.current()){
+	onSignInSucess();
+}
+
+alert('running');
 
 function onClickSignUp() {
 	var user = new Parse.User();
@@ -31,7 +36,7 @@ function onClickLogin(){
       success: function(user) {
         var userSessionId = Parse.User.current().getSessionToken();
         Parse.User.become(userSessionId);
-        successfulSignup();
+        onSignInSucess();
       },
       error: function(user, error) {
         failedSignup(user, error);
@@ -39,8 +44,8 @@ function onClickLogin(){
     });
 }
 
-function successfulSignup(){
-	alert('success!');
+function onSignInSucess(){
+	location.href='welcome.html'
 }
 
 function failedSignup(user, error){
