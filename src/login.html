@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Welcome to Virtue/Vice!</title>
 		<link rel="stylesheet" href="../css/login.css">
+    <script type="text/javascript" src="../js/parse.js"></script>
 	</head>
 	<body>
 	  <div class="login">
@@ -32,12 +33,13 @@
        	</table>
        	<p id="signInMessage">Sign in successful! <span style="color: #4caf50">&#10004;</span></p>
        	<div class="buttons">
-       		<input class="loginButton" type="button" value="Login" onclick="location.href='welcome.html'">
+       		<input class="loginButton" type="button" value="Login" onclick="onClickLogin()">
           <input class="signUpButton" type="button" value="Signup" onclick="onClickSignUp()">
         </div>
       </form>
     </div>
 
-    <script src="../js/login.js"></script>
+    <script src="../js/login.js">
+    </script>
 	</body>
 </html>
