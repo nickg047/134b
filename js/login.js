@@ -4,8 +4,6 @@ if (Parse.User.current()){
 	onSignInSucess();
 }
 
-alert('running');
-
 function onClickSignUp() {
 	var user = new Parse.User();
 	var screenname = getUser();
