@@ -135,25 +135,14 @@ function completedHabit(id_param){
 /*
     UI update of deleting a habit
     Called within deleteHabitLS(id_param)
-      Could put nice UI movement to make it look pretty here
+      Could put nice UI effect to make it look pretty here
 */
 function deleteHabit(id_param){
     updateHabitUI();
     var habitsDelUI = JSON.parse(localStorage.getItem("Habits"));
     if(habitsDelUI.length == 0){
         location.href='add.html'; //If there are no habits left return to add page
-    }
-    /*
-    var habitsDelUI = JSON.parse(localStorage.getItem("Habits"));
-    //Should only expect changes from the deleted id and forward (sliding)
-    for (var i = 0; i < habitsDelUI.length; i++){
-    		detailHabit(id_param);
-		//Temp fix as the original last habit is displayed twice
-		if(i = habitsDelUI.length -1){
-		    document.getElementById(("HABIT"+id_param)).parentNode.style.visibility = "invisible";
-		}
-    }
-    */    
+    }   
 }
 /*
     only works with backend

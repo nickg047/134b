@@ -19,12 +19,19 @@ function addFromUI() {
     }else {
         i = habits[habits.length-1].id + 1;
     }
+    var dailyCount;
+    if(getCheckedBoxes('day') !== null){
+       dailyCount = getCheckedBoxes('day');
+    }
+    else{
+       dailyCount = [document.getElementById("others").value];
+    }
 	var habit = {
         id: i,
         title: document.getElementById('title').value,
         image: image.src,
         weekFreq: getCheckedBoxes('date'),
-        dailyFreq: getCheckedBoxes('day'),
+        dailyFreq: dailyCount,
         other: document.getElementById('others').value,
         ticks: 0,
         bestRecord: 0,
