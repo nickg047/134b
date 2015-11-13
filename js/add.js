@@ -22,11 +22,11 @@ function addFromUI() {
 	var habit = {
         id: i,
         title: document.getElementById('title').value,
-                image: image.src,
-                weekFreq: getCheckedBoxes('date'),
-                dailyFreq: getCheckedBoxes('day'),
-                other: document.getElementById('others').value
-            	};
+        image: image.src,
+        weekFreq: getCheckedBoxes('date'),
+        dailyFreq: getCheckedBoxes('day'),
+        other: document.getElementById('others').value
+    };
     addHabit(habit);
 }
 /*
@@ -37,8 +37,8 @@ function addHabit(habit) {
     		        
     //Get stored data
     var habits = JSON.parse(localStorage.getItem('Habits'));
-		if (habits === null) {
-        //If no stored data, create empty array
+    //If no stored data, create empty array
+    if (habits === null) {
         habits = [];
     }
 
