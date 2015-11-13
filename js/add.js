@@ -25,9 +25,14 @@ function addFromUI() {
         image: image.src,
         weekFreq: getCheckedBoxes('date'),
         dailyFreq: getCheckedBoxes('day'),
-        other: document.getElementById('others').value
+        other: document.getElementById('others').value,
+        ticks: 0,
+        bestRecord: 0,
+        currentStreak: 0,
+        date: 0
     };
     addHabit(habit);
+    location.href='list.html'; 
 }
 /*
 	gets called from addFromUI() 
