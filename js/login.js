@@ -2,11 +2,11 @@ Parse.initialize("lSrD6K2YbBIZKM7H8VMS43nY1ekjsEohi1RNY7Iu", "c3iXu7MDpI5guDqlEg
 
 
 function onClickSignUp() {
-	var user = Parse.User();
+	var user = new Parse.User();
 	var screenname = getUser();
 	user.set("username", screenname);
 	user.set("password", getPassword());
-	uesr.set("email", screenname);
+	user.set("email", screenname);
 	user.signUp(null, {
 		success: function(user) {
 			onSignupSuccess();
@@ -44,7 +44,7 @@ function successfulSignup(){
 }
 
 function failedSignup(user, error){
-	alert('failure');
+	alert(error.message);
 }
 
 function onSignupSuccess(){
