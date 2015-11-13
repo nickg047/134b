@@ -67,12 +67,11 @@ function makeHabit(habit){
 		    */
 }
 
-
 //Update the UI for an individual habit using the info from database				
-function detailHabit(habitID){
+function detailHabit(id_param){
     //Get the habit to modify and the database info for it
-    var habitMod = document.getElementById(("HABIT"+habitID));
-    var habitInfo = isolateHabit(habitID);
+    var habitMod = document.getElementById(("HABIT"+id_param));
+    var habitInfo = isolateHabit(id_param);
     //Title
     habitMod.getElementsByClassName("habit-name")[0].innerHTML = habitInfo.title;
     //Image
@@ -81,6 +80,8 @@ function detailHabit(habitID){
     //Stats
     habitMod.getElementsByClassName("message-total")[0].children[0].innerHTML = habitInfo.currentStreak;
     habitMod.getElementsByClassName("message-total")[0].children[1].innerHTML = habitInfo.bestRecord;
+    //----->CHANGE HERE if not supposed to use ticks
+    habitMod.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habitInfo.ticks+"/"+parseInt(habitInfo.dailyFreq[0])
     
     //Make it visible
     habitMod.parentNode.style.visibility="visible";
@@ -96,11 +97,39 @@ function isolateHabit(habitID){
     }
     return (JSON.parse(habitString));
 }	
-			
+
+/*
+    Used to show "completed x/y for today!" text when
+    hitting the check mark
+*/			
 function showMsg(element){
     var msgElement = (element.parentNode.parentNode.getElementsByClassName("message-today"))[0];
     //alert(msgElement.innerHTML);
     msgElement.style.visibility="visible";
+}
+
+/*
+    Increment the ticks for how many times you performed the
+    habit for today
+    NOTE I WASN'T SURE WHAT TICKS WAS BUT I USED IT (I ASSUMED IT WAS EITHER TO = TIME)
+*/
+function completedHabit(id_param){
+    var habitC = getAllHabits();
+    habitC[id_param].ticks = habitC[id_param].ticks + 1;
+    
+    //Only update the daily streaks once per day
+    if(habitC[id_param].ticks === parseInt(habitC[id_param].dailyFreq[0])){
+        if(habitC[id_param].ticks > habitC[id_param].currentStreak){
+            habitC[id_param].currentStreak = habitC[id_param].ticks;
+        }
+        if(habitC[id_param].currentStreak > habitC[id_param].bestRecord){
+            habitC[id_param].bestRecord = habitC[id_param].currentStreak;
+        }
+    }
+    //Update Database
+    localStorage.setItem("Habits", JSON.stringify(habitC));
+    
+    detailHabit(id_param); 
 }
 
 /*
@@ -151,7 +180,7 @@ function deleteHabitLS(id_param){
         else {
             localStorage.setItem("Habits", JSON.stringify(habitsDel));
         }
-		deleteHabit(id_param);
+		deleteHabit(id_param);//For UI
     }
     else {
         alert("id does not exist");
