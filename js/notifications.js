@@ -23,8 +23,11 @@ function pushNotify(var strToDisplay) {
   }
 }
 
+// wait a specified amount of time, then push a notification
 function timerNotification(var strToDisplay, var timerSeconds){
 
-    setTimeout(myFunction, timerSeconds);
-    pushNotify(strToDisplay);
+    setTimeout(pushNotify(strToDisplay), timerSeconds);
+    
 }
+
+
