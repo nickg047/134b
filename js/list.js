@@ -4,7 +4,6 @@ function getAllHabits(){
         habits = [];
         localStorage.setItem("Habits", JSON.stringify(habits));
     }
-    alert(typeof habits[0].id)
     return habits;
 }
 
