@@ -1,6 +1,6 @@
 // from Mozilla Dev Network
 // modified for modular use in our app
-function pushNotify(var strToDisplay) {
+function pushNotify(strToDisplay) {
   // Check if the browser supports notifications
   if (!("Notification" in window)) {
     alert("This browser does not support desktop notification");
@@ -23,11 +23,7 @@ function pushNotify(var strToDisplay) {
   }
 }
 
-// wait a specified amount of time, then push a notification
-function timerNotification(var strToDisplay, var timerSeconds){
-
-    setTimeout(pushNotify(strToDisplay), timerSeconds);
-    
+function createNotification(strToDisplay, timerInMiSeconds){
+    setTimeout(pushNotify(strToDisplay), timerInMiSeconds);
 }
-
 
