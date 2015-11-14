@@ -79,6 +79,7 @@ function makeHtmlElement(habit){
     listItem.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.bestRecord;
     //----->CHANGE HERE if not supposed to use ticks
     setCompletionText(listItem, habit);
+    setMeter(listItem, habit);
 
     if(!todayIsUpdateDay(habit)){  //TODO hide green button
         hideCompleteButton();
@@ -114,6 +115,19 @@ function completedHabit(habit){
 }
 
 function hideCompleteButton(){
+
+}
+
+function setMeter(listItem, habit){
+    var line1 = listItem.getElementsByClassName('meter')[0];
+    var line2 = listItem.getElementsByClassName('meter')[1];
+
+    var max = parseFloat(line2.getAttribute('x2'));
+
+    var fractionToBest = habit.bestRecord === 0 ? 0.0 : (habit.currentStreak * max)/habit.bestRecord;
+
+    line1.setAttribute('x2', fractionToBest);
+    line2.setAttribute('x1', fractionToBest);
 
 }
 
@@ -186,6 +200,7 @@ function completeHabit(id_param){
     updateHabit(habitC);
 
     setCompletionText(listElement, habitC);
+    setMeter(listElement, habitC);
     showTodaysCompletions(listElement);
 }
 
