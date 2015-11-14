@@ -41,7 +41,7 @@ function addFromUI() {
         ticks: 0,
         bestRecord: 0,
         currentStreak: 0,
-        date: 0
+        date: new Date()
     };
     addHabit(habit);
     location.href='list.html'; 
