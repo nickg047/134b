@@ -4,6 +4,7 @@ function getAllHabits(){
         habits = [];
         localStorage.setItem("Habits", JSON.stringify(habits));
     }
+    alert(typeof habits[0].id)
     return habits;
 }
 
@@ -189,7 +190,7 @@ function completeHabit(id_param){
     }
     
     //Only update the daily streaks once per day
-    if(habitC.ticks === parseInt(habitC.dailyFreq)){
+    if(habitC.ticks === habitC.dailyFreq){
         if(habitC.ticks > habitC.currentStreak){
             habitC.currentStreak = habitC.ticks;
         }
