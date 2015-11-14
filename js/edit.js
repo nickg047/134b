@@ -42,7 +42,6 @@ function editHabit(habit) {
 	for (i = 0; i < habits.length; i++){
 		original_habit = habits[i];		  
         if(habit.id === original_habit.id) {
-        	alert("i = " + i + "habit.id = " + habit.id);
             break;
     	}
     }
