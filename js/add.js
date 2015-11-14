@@ -12,6 +12,10 @@ function selectImage(name) {
 	gets variables for habit from html form
 */
 function addFromUI() {
+    if (image === null){
+        errorNeedToPickImage();
+        return;
+    }
     var habits = JSON.parse(localStorage.getItem('Habits'));
     var newHabitId;
     if (habits.length === 0){//Is so because initialized to Habits: []
@@ -32,7 +36,7 @@ function addFromUI() {
         title: document.getElementById('title').value,
         image: image.src,
         weekFreq: getCheckedBoxes('date'),
-        dailyFreq: dailyCount,
+        dailyFreq: getDailyCount(),
         other: document.getElementById('others').value,
         ticks: 0,
         bestRecord: 0,
@@ -41,6 +45,37 @@ function addFromUI() {
     };
     addHabit(habit);
     location.href='list.html'; 
+}
+
+function errorNeedToPickImage(){ //this could also be preset, which is how it is in the todo list, so this error is never thrown
+    alert('pick image');
+}
+
+function getDailyCount(){
+    var daily = document.getElementById("others").value;
+    if(isInt(daily)){
+        return parseInt(daily, 10);
+    }else{
+        var checkBoxes = getCheckedBoxes('day');
+        var day;
+        for (var i = 0; i < checkBoxes.length; i++){
+            day = checkBoxes[i];
+            if (day){
+                return i + 1;
+            }
+        }
+        return i;
+    }
+}
+
+function isInt(data){
+    if (data != parseInt(data, 10))
+        return false;
+    data = parseInt(data, 10);
+    if (data < 1){
+        return false;
+    }
+    return true;
 }
 /*
 	gets called from addFromUI() 
@@ -67,7 +102,9 @@ function getCheckedBoxes(chkboxName) {
     var checkboxesChecked = [];
     for (var i=0; i<checkboxes.length; i++) {
         if (checkboxes[i].checked) {
-            checkboxesChecked.push(checkboxes[i].value);
+            checkboxesChecked.push(1);
+        }else{
+            checkboxesChecked.push(0);
         }
     }
     return checkboxesChecked.length > 0 ? checkboxesChecked : null;

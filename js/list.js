@@ -7,10 +7,22 @@ function getAllHabits(){
     return habits;
 }
 
+//habitId needs to be an integer
+function getHabitById(habitId){
+    var habits = getAllHabits();
+    var habit;
+    for (var i = 0; i < habits.length; i++){
+        habit = habits[i];
+        if (habitId === habit.id){
+            return habit;
+        }
+    }
+}
+
 function deleteHabit(habitId){
     var habits = getAllHabits();
     habitId = parseInt(habitId);
-    
+    var habit;
     for (var i = 0; i < habits.length; i++){
         habit = habits[i];
         if (habitId === habit.id){
@@ -21,16 +33,24 @@ function deleteHabit(habitId){
     localStorage.setItem("Habits", JSON.stringify(habits));
 }
 
-function test(){
-
+function updateHabit(habitToUpdate){
+    var habits = getAllHabits();
+    var habit;
+    for (var i = 0; i < habits.length; i++){
+        habit = habits[i];
+        if (habitToUpdate.id === habit.id){
+            habits[i] = habitToUpdate;
+            localStorage.setItem("Habits", JSON.stringify(habits));
+            return;
+        }
+    }
 }
 
-//On load update the UI displayed for all habits if allowed
 function updateHabitUI(){
     var habits = getAllHabits();
-    console.log('what');
     var listItem;  //type is HTML ListItem
     var list = document.getElementById('habit-list');
+    var habit;
 
     for (var i = 0; i < habits.length; i++){
         habit = habits[i];
@@ -40,9 +60,8 @@ function updateHabitUI(){
 
     JSON.parse(localStorage.getItem("Habits"));
 }
-
 updateHabitUI();
-    
+
 function makeHtmlElement(habit){
     var listItem = document.createElement('li');
     listItem.id = habit.id;
@@ -59,10 +78,43 @@ function makeHtmlElement(habit){
     listItem.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.currentStreak;
     listItem.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.bestRecord;
     //----->CHANGE HERE if not supposed to use ticks
-    listItem.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habit.ticks+"/"+parseInt(habit.dailyFreq[0]);
-    
+    setCompletionText(listItem, habit);
 
+    if(!todayIsUpdateDay(habit)){  //TODO hide green button
+        hideCompleteButton();
+    }
+    if(completedHabit(habit)){
+        showTodaysCompletions(listItem);
+        hideCompleteButton();
+    }
     return listItem;
+}
+
+function setCompletionText(listElement, habit){
+    listElement.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habit.ticks+"/"+habit.dailyFreq;
+}
+
+function todayIsUpdateDay(habit){
+    var date = new Date();
+    var day = date.getDay();
+    date = null;
+    if (habit.weekFreq[day] === 0){  //if you didn't select today as a day that you should update your habits
+        return false;
+    }
+    return true;
+}
+
+function showTodaysCompletions(listElement){
+    var msgElement = listElement.getElementsByClassName("message-today")[0];
+    msgElement.style.visibility="visible";
+}
+
+function completedHabit(habit){
+    return habit.ticks == habit.dailyFreq;
+}
+
+function hideCompleteButton(){
+
 }
 
 /*  
@@ -106,7 +158,6 @@ function isolateHabit(habitID){
 */          
 function showMsg(element){
     var msgElement = (element.parentNode.parentNode.getElementsByClassName("message-today"))[0];
-    //alert(msgElement.innerHTML);
     msgElement.style.visibility="visible";
 }
 
@@ -115,23 +166,31 @@ function showMsg(element){
     habit for today
     NOTE I WASN'T SURE WHAT TICKS WAS BUT I USED IT (I ASSUMED IT WAS EITHER TO = TIME)
 */
-function completedHabit(id_param){
-    var habitC = getAllHabits();
-    habitC[id_param].ticks = habitC[id_param].ticks + 1;
+function completeHabit(id_param){
+    var listElement = getHabitElement(id_param);
+    var habitC = getHabitById(parseInt(listElement.id));
+    habitC.ticks = habitC.ticks + 1;
+    if (habitC.ticks > habitC.dailyFreq){
+        habitC.ticks = habitC.dailyFreq;
+    }
     
     //Only update the daily streaks once per day
-    if(habitC[id_param].ticks === parseInt(habitC[id_param].dailyFreq[0])){
-        if(habitC[id_param].ticks > habitC[id_param].currentStreak){
-            habitC[id_param].currentStreak = habitC[id_param].ticks;
+    if(habitC.ticks === parseInt(habitC.dailyFreq)){
+        if(habitC.ticks > habitC.currentStreak){
+            habitC.currentStreak = habitC.ticks;
         }
-        if(habitC[id_param].currentStreak > habitC[id_param].bestRecord){
-            habitC[id_param].bestRecord = habitC[id_param].currentStreak;
+        if(habitC.currentStreak > habitC.bestRecord){
+            habitC.bestRecord = habitC.currentStreak;
         }
     }
-    //Update Database
-    localStorage.setItem("Habits", JSON.stringify(habitC));
-    
-    detailHabit(id_param); 
+    updateHabit(habitC);
+
+    setCompletionText(listElement, habitC);
+    showTodaysCompletions(listElement);
+}
+
+function getHabitElement(clickElement){
+    return clickElement.parentNode.parentNode;
 }
 
 /*
@@ -145,10 +204,8 @@ function onDeletePress(id_param){
 
     var id = listItem.id;
     deleteHabit(id);
-    alert(getAllHabits().length);
 
     listContainer.removeChild(listItem);
-    //updateHabitUI();
      
 }
 /*
