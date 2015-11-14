@@ -18,7 +18,7 @@ function addFromUI() {
     }
     var habits = JSON.parse(localStorage.getItem('Habits'));
     var newHabitId;
-    if (habits.length === 0){//Is so because initialized to Habits: []
+    if (habits === null || habits.length === 0){//Is so because initialized to Habits: []
         newHabitId = 0;
     }else {
         var prevHabit = habits[habits.length-1];
@@ -64,7 +64,7 @@ function getDailyCount(){
                 return i + 1;
             }
         }
-        return i;
+        return 1;
     }
 }
 

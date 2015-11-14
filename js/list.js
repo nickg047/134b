@@ -77,6 +77,8 @@ function makeHtmlElement(habit){
     //Stats
     listItem.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.currentStreak;
     listItem.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.bestRecord;
+
+    listItem.getElementsByClassName("op op-edit")[0].onclick = function onclick(event) {location.href='edit.html?id='+habit.id;}
     //----->CHANGE HERE if not supposed to use ticks
     setCompletionText(listItem, habit);
     setMeter(listItem, habit);
