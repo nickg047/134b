@@ -79,7 +79,7 @@ function makeHtmlElement(habit){
     listItem.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.bestRecord;
 
     listItem.getElementsByClassName("op op-edit")[0].onclick = function onclick(event) {location.href='edit.html?id='+habit.id;}
-    //----->CHANGE HERE if not supposed to use ticks
+
     setCompletionText(listItem, habit);
     setMeter(listItem, habit);
 
@@ -126,11 +126,11 @@ function setMeter(listItem, habit){
 
     var max = parseFloat(line2.getAttribute('x2'));
 
-    var fractionToBest = habit.bestRecord === 0 ? 0.0 : (habit.currentStreak * max)/habit.bestRecord;
-
-    line1.setAttribute('x2', fractionToBest);
-    line2.setAttribute('x1', fractionToBest);
-
+    //var fractionToBest = habit.bestRecord === 0 ? 0.0 : (habit.currentStreak * max)/habit.bestRecord;
+    var tickProgToday = max * (habit.ticks/habit.dailyFreq);
+    
+    line1.setAttribute('x2', tickProgToday);
+    line2.setAttribute('x1', tickProgToday);
 }
 
 /*  
