@@ -12,10 +12,16 @@ function selectImage(name) {
 	gets variables for habit from html form
 */
 function addFromUI() {
+    //Check to make sure input is valid
     if (image === null){
         errorNeedToPickImage();
         return;
     }
+    if (document.getElementById('title').value.length == 0){
+        errorNeedToChooseTitle();
+		return;
+    }    
+    
     var habits = JSON.parse(localStorage.getItem('Habits'));
     var newHabitId;
     if (habits === null || habits.length === 0){//Is so because initialized to Habits: []
@@ -48,7 +54,13 @@ function addFromUI() {
 }
 
 function errorNeedToPickImage(){ //this could also be preset, which is how it is in the todo list, so this error is never thrown
-    alert('pick image');
+    alert("Select an image before saving");
+}
+function errorNeedToChooseTitle(){
+    alert("Choose a title before saving");
+}
+function errorNeedToChooseFrequency(){
+    alert("Choose a weekly and daily frequency before saving");
 }
 
 function getDailyCount(){
