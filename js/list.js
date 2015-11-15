@@ -94,6 +94,8 @@ function makeHtmlElement(habit){
 }
 
 function setCompletionText(listElement, habit){
+    listElement.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.currentStreak;
+    listElement.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.bestRecord; 
     listElement.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habit.ticks+"/"+habit.dailyFreq;
 }
 
@@ -101,7 +103,8 @@ function todayIsUpdateDay(habit){
     var date = new Date();
     var day = date.getDay();
     date = null;
-    if (habit.weekFreq[day] === 0){  //if you didn't select today as a day that you should update your habits
+    //if you didn't select today as a day that you shouldn't update your habits
+    if (habit.weekFreq[day] === 0){  
         return false;
     }
     return true;
@@ -133,77 +136,27 @@ function setMeter(listItem, habit){
     line2.setAttribute('x1', tickProgToday);
 }
 
-/*  
-
-makeHtmlElement should now be taking care of this
-
-//Update the UI for an individual habit using the info from database                
-function detailHabit(id_param){
-    //Get the habit to modify and the database info for it
-    var habitMod = document.getElementById(("HABIT"+id_param));
-    var habitInfo = isolateHabit(id_param);
-    //Title
-    habitMod.getElementsByClassName("habit-name")[0].innerHTML = habitInfo.title;
-    //Image
-    habitMod.getElementsByClassName("habit-icon")[0].src = habitInfo.image;
-    habitMod.getElementsByClassName("habit-name")[0].innerHTML.alt = habitInfo.image.substring(habitInfo.image.lastIndexOf("/")+1);
-    //Stats
-    habitMod.getElementsByClassName("message-total")[0].children[0].innerHTML = habitInfo.currentStreak;
-    habitMod.getElementsByClassName("message-total")[0].children[1].innerHTML = habitInfo.bestRecord;
-    //----->CHANGE HERE if not supposed to use ticks
-    habitMod.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habitInfo.ticks+"/"+parseInt(habitInfo.dailyFreq[0]);
-    
-    //Make it visible
-    habitMod.parentNode.style.visibility="visible";
-}*/
-
-//Isolate the string and make it an object for a desire habit, called by id number
-function isolateHabit(habitID){
-    var _mainHabit = localStorage.getItem("Habits");
-    if(_mainHabit !== null && typeof habitID == 'number'){
-        var _idString = "\"id\":"+habitID;
-        var habitString = _mainHabit.substring(_mainHabit.indexOf(_idString) -1);
-        habitString = habitString.substring(0, habitString.indexOf("}")+1); 
-    }
-    return (JSON.parse(habitString));
-}   
-
-/*
-    Used to show "completed x/y for today!" text when
-    hitting the check mark
-*/          
-function showMsg(element){
-    var msgElement = (element.parentNode.parentNode.getElementsByClassName("message-today"))[0];
-    msgElement.style.visibility="visible";
-}
-
 /*
     Increment the ticks for how many times you performed the
     habit for today
-    NOTE I WASN'T SURE WHAT TICKS WAS BUT I USED IT (I ASSUMED IT WAS EITHER TO = TIME)
 */
 function completeHabit(id_param){
     var listElement = getHabitElement(id_param);
     var habitC = getHabitById(parseInt(listElement.id));
-    habitC.ticks = habitC.ticks + 1;
-    if (habitC.ticks > habitC.dailyFreq){
-        habitC.ticks = habitC.dailyFreq;
-    }
-    
-    //Only update the daily streaks once per day
-    if(habitC.ticks === habitC.dailyFreq){
-        if(habitC.ticks > habitC.currentStreak){
-            habitC.currentStreak = habitC.ticks;
-        }
-        if(habitC.currentStreak > habitC.bestRecord){
-            habitC.bestRecord = habitC.currentStreak;
-        }
-    }
-    updateHabit(habitC);
 
-    setCompletionText(listElement, habitC);
-    setMeter(listElement, habitC);
-    showTodaysCompletions(listElement);
+    if(habitC.ticks < habitC.dailyFreq){//If already there do nothing
+        habitC.ticks = habitC.ticks + 1;
+		if(completedHabit(habitC) && todayIsUpdateDay(habitC)){
+		    habitC.currentStreak = 1 + habitC.currentStreak;
+		}
+		if(habitC.currentStreak > habitC.bestRecord){
+		    habitC.bestRecord = habitC.currentStreak;
+		}
+    }
+   updateHabit(habitC);
+   setCompletionText(listElement, habitC);
+   setMeter(listElement, habitC);
+   showTodaysCompletions(listElement);
 }
 
 function getHabitElement(clickElement){
