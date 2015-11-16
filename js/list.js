@@ -1,3 +1,7 @@
+/*
+ * getAllHabits()
+ *  Return a list of all the habits taken from the database
+ */
 function getAllHabits(){
     var habits = JSON.parse(localStorage.getItem("Habits"));
     if (!habits){
@@ -7,7 +11,10 @@ function getAllHabits(){
     return habits;
 }
 
-//habitId needs to be an integer
+/*
+ *  getHabitById(habitId)
+ *   Return the habit object given its id
+ */
 function getHabitById(habitId){
     var habits = getAllHabits();
     var habit;
@@ -19,20 +26,11 @@ function getHabitById(habitId){
     }
 }
 
-function deleteHabit(habitId){
-    var habits = getAllHabits();
-    habitId = parseInt(habitId);
-    var habit;
-    for (var i = 0; i < habits.length; i++){
-        habit = habits[i];
-        if (habitId === habit.id){
-            habits.splice(i, 1);
-            break;
-        }
-    }
-    localStorage.setItem("Habits", JSON.stringify(habits));
-}
-
+/*
+ *  updateHabit(habitToUpdate)
+ *   Takes in a habit as a parameter and swaps it into the 
+ *   habit object list and re-writes this into the database.
+ */
 function updateHabit(habitToUpdate){
     var habits = getAllHabits();
     var habit;
@@ -46,22 +44,61 @@ function updateHabit(habitToUpdate){
     }
 }
 
+/*
+ *  updateHabitUI
+ *   For all the habits within our list, make the HTML element using
+ *   a method call and append it to the list. Seperate habits that
+ *   are scheduled today vs not if necessary
+ */
 function updateHabitUI(){
     var habits = getAllHabits();
     var listItem;  //type is HTML ListItem
     var list = document.getElementById('habit-list');
     var habit;
-
+    var othersExist = false;
     for (var i = 0; i < habits.length; i++){
         habit = habits[i];
-        listItem = makeHtmlElement(habit);
-        list.appendChild(listItem);
+		if(todayIsUpdateDay(habit)){
+            listItem = makeHtmlElement(habit);
+            list.appendChild(listItem);
+		}
+		else{
+		    othersExist = true;
+		}
     }
-
+    
+    if(othersExist){
+        var seperator = document.createElement('li');
+        seperator.innerHTML = '<h1> Other Habits </h1>'
+        //Couldn't get it to work in CSS file so manually here
+        seperator.style.height = '50px';
+        seperator.style.background= 'none';
+        seperator.style.border = 'none';
+        list.appendChild(seperator);
+        
+        for (var i = 0; i < habits.length; i++){
+            habit = habits[i];
+            if(!todayIsUpdateDay(habit)){
+                listItem = makeHtmlElement(habit);
+                list.appendChild(listItem);
+            }
+        }
+    }
     JSON.parse(localStorage.getItem("Habits"));
+    
 }
+
+//On loading the script for this class updateHabitUI
+//so on page load it draws everything
 updateHabitUI();
 
+/*
+ *  makeHtmlElement(habit)
+ *   Takes in a habit object and uses its information to make a 
+ *   list element for UI to be appended to the list. It builds off
+ *   of the 'template' div in list.html. Sets title, image, text info,
+ *   buttons. Called from updateHabitUI
+ */ 
 function makeHtmlElement(habit){
     var listItem = document.createElement('li');
     listItem.id = habit.id;
@@ -83,22 +120,37 @@ function makeHtmlElement(habit){
     setCompletionText(listItem, habit);
     setMeter(listItem, habit);
 
-    if(!todayIsUpdateDay(habit)){  //TODO hide green button
-        hideCompleteButton();
+    if(!todayIsUpdateDay(habit)){
+        showCompleteButton(listItem, true);
     }
+    else{
+        showCompleteButton(listItem, false);
+    }
+    
     if(completedHabit(habit)){
         showTodaysCompletions(listItem);
-        hideCompleteButton();
+        showCompleteButton(listItem, false);
     }
     return listItem;
 }
 
+/*
+ *  setCompletionText(listElement, habit)
+ *   Updates the UI of the currentStreak, bestRecord, and your
+ *   progress on completing a habit for today
+ */
 function setCompletionText(listElement, habit){
     listElement.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.currentStreak;
     listElement.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.bestRecord; 
     listElement.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habit.ticks+"/"+habit.dailyFreq;
 }
 
+/*
+ *  todayIsUpdateDay(habit)
+ *   Checks if this habit is scheduled for today, and if today
+ *   is in fact that day.  
+ *   Return boolean
+ */
 function todayIsUpdateDay(habit){
     var date = new Date();
     var day = date.getDay();
@@ -110,19 +162,46 @@ function todayIsUpdateDay(habit){
     return true;
 }
 
+/*
+ *  showTodaysCompletions(listElement)
+ *   Used when you have hitten a check mark to show the progress
+ *   you have made with a text indication.
+ */
 function showTodaysCompletions(listElement){
     var msgElement = listElement.getElementsByClassName("message-today")[0];
     msgElement.style.visibility="visible";
 }
 
+/*
+ *  completedHabit(habit)
+ *   Simple check to see if you have completed the habit for today
+ *   Return boolean
+ */
 function completedHabit(habit){
     return habit.ticks == habit.dailyFreq;
 }
 
-function hideCompleteButton(){
-
+/*
+ *  showCompleteButton(listElement, willShow)
+ *   Hides the green checkmark of this listElement habit
+ *   This is done on habits which are not scheduled to have
+ *   been completed today
+ *   listItem is the habit, willShow is boolean
+ */
+function showCompleteButton(listElement, willShow){
+    if(willShow){
+        listElement.getElementsByClassName('op op-done')[0].style.display = "none";
+    }
+    else{
+        listElement.getElementsByClassName('op op-done')[0].style.display = "initial";
+    }
 }
 
+/*
+ *  setMeter(listItem, habit)
+ *   Updates the UI of a habit when you increment your
+ *   ticks for today. Grows the status bar
+ */      
 function setMeter(listItem, habit){
     var line1 = listItem.getElementsByClassName('meter')[0];
     var line2 = listItem.getElementsByClassName('meter')[1];
@@ -137,9 +216,12 @@ function setMeter(listItem, habit){
 }
 
 /*
-    Increment the ticks for how many times you performed the
-    habit for today
-*/
+ *  completeHabit(id_param)
+ *   Called when you hit the checkmark
+ *   Increment the ticks for how many times you completed the
+ *   habit today. Also contains the implementatin for updating
+ *   your currentStreak and bestRecord, also calls UI updates
+ */
 function completeHabit(id_param){
     var listElement = getHabitElement(id_param);
     var habitC = getHabitById(parseInt(listElement.id));
@@ -159,15 +241,21 @@ function completeHabit(id_param){
    showTodaysCompletions(listElement);
 }
 
+/*
+ *  getHabitElement(clickElement)
+ *   Return the list element <li> of this habit
+ *   Used in completeHabit
+ */
 function getHabitElement(clickElement){
     return clickElement.parentNode.parentNode;
 }
 
 /*
-    UI update of deleting a habit
-    Called within deleteHabitLS(id_param)
-      Could put nice UI effect to make it look pretty here
-*/
+ *  onDeletePress(id_param)
+ *   Called when you hit the red delete button
+ *   Deletes it from the UI by deleting list element and
+ *   calls deleteHabit to remove from database
+ */
 function onDeletePress(id_param){
     var listItem = id_param.parentNode.parentNode;
     var listContainer = listItem.parentNode;
@@ -175,37 +263,25 @@ function onDeletePress(id_param){
     var id = listItem.id;
     deleteHabit(id);
 
-    listContainer.removeChild(listItem);
-     
+    listContainer.removeChild(listItem); 
 }
+
 /*
-    only works with backend
-    id_param: id of the habit to be deleted
-*/
-function deleteHabitLS(id_param){
-    var habitsDel = JSON.parse(localStorage.getItem("Habits"));
-    var removed = false;
-    for (var i = 0; i < habitsDel.length; i++){
-        var habit = habitsDel[i];
-        if(habit.id === id_param) {
-            habitsDel.splice(i, 1);
-            removed = true;
-            i = i - 1;
-        }
-        if(habit.id > id_param && removed) {
-            habit.id = habit.id - 1; 
+ *  deleteHabit(habitId)
+ *   Deleting the habit instance from our database
+ *   Called from onDeletePress 
+ */
+function deleteHabit(habitId){
+    var habits = getAllHabits();
+    habitId = parseInt(habitId);
+    var habit;
+    for (var i = 0; i < habits.length; i++){
+        habit = habits[i];
+        if (habitId === habit.id){
+            habits.splice(i, 1);
+            break;
         }
     }
-    if(removed === true) {
-        if(habitsDel.length === 0) {
-            localStorage.removeItem("Habits");
-        }
-        else {
-            localStorage.setItem("Habits", JSON.stringify(habitsDel));
-        }
-        deleteHabit(id_param);//For UI
-    }
-    else {
-        alert("id does not exist");
-    }
+    localStorage.setItem("Habits", JSON.stringify(habits));
 }
+
