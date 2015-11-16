@@ -41,6 +41,8 @@ function editFromUI() {
 	habit: habit to update
 */
 function editHabit(habit) {
+    if(!isAHabit(habit)){return;} //Safeguard
+
     var habits = JSON.parse(localStorage.getItem("Habits"));
 	var i;
 	var id_param = 0; //hardcoded
@@ -68,6 +70,7 @@ function updateHabitUI(){
 }
 updateHabitUI();
 function makeHtmlElement(habit){
+    if(!isAHabit(habit)){return;} //Safeguard
     
     var listItem = document.getElementById('forms');
     var elementTemplate = document.getElementById('template').innerHTML;
@@ -163,6 +166,28 @@ function isInt(data){
     data = parseInt(data, 10);
     if (data < 1){
         return false;
+    }
+    return true;
+}
+
+/*
+ *  isAHabit(habit)
+ *   Determines the field names of an object, if they do not match up with
+ *   what should be the field names of a habit than return false. Used to
+ *   verify/protect input into database.
+ */
+function isAHabit(habit){
+    //Get the fields
+    var k=[],p;
+        for (p in habit) if (Object.prototype.hasOwnProperty.call(habit,p)) k.push(p);
+    
+    var habitFields = ["id", "title", "image", "weekFreq", "dailyFreq", "other", "ticks", "bestRecord", "currentStreak", "date"];
+    var i;
+    for(i = 0; i < 10; i++){
+        if(habitFields[i] !== k[i]){
+            alert("ERROR: Attempted to enter an invalid habit into database");
+		    return false;
+		}
     }
     return true;
 }
