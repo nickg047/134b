@@ -36,8 +36,10 @@ input#title{
 
 }
 input#others{
+    margin-top: 10px;
+    margin-left: 5px;
 	height: 30px;
-	width: 250px;
+	width: 200px;
 	font-size:medium;
 }
 img.icon{
