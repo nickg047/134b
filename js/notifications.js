@@ -1,4 +1,4 @@
-a// from Mozilla Dev Network
+// from Mozilla Dev Network
 // modified for modular use in our app
 
 
