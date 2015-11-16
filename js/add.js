@@ -5,13 +5,53 @@ image = null;
  *   When choosing a icon this will put a blue border around only the selected
  *   icon. It then sets the image for the habit to be this one
  */
-function selectImage(name) {
+function selectImage(id_param) {
 //Clear all the other effects
-    document.getElementById('icon1').style.border = "none";
-    document.getElementById('icon2').style.border = "none";
-    document.getElementById('icon3').style.border = "none";
-    image = document.getElementById(name);
+    var icons = document.getElementsByClassName("icon");
+    var i = 0;
+    for(i; i<icons.length; i++){
+        icons[i].style.border = "none";
+    }
+    image = document.getElementById(id_param);
     image.style.border = "5px solid #42A5F5";
+}
+
+/*
+ *  updateImage(input)
+ *   Turn the add image into a new image and save this new image as the
+ *   image you have selected
+ *
+ *   NOTE TEMPORARY AS SRC = LOCAL URL, NEED SOMETHING THAT CAN BE PASSED
+ *   INTO LOCAL STORAGE AND USED IN ANOTHER FILE
+ */
+function updateImage(input){
+    var imgU = URL.createObjectURL(input.files[0]);
+    if(imgU !== "null"){
+        //Add in the new img element
+		var imgE = document.createElement('img');
+		var iconNum = document.getElementsByClassName("icon").length;
+		imgE.id = ("icon"+iconNum);
+		imgE.className = "icon";
+		imgE.src = imgU;
+		imgE.alt = "Uploaded Image";
+		imgE.onclick = function() { selectImage(("icon"+iconNum)); };
+		
+		document.getElementById("icon-list").appendChild(imgE);
+		selectImage(("icon"+iconNum));
+    }
+    else{
+		document.getElementById("icon4".src = "../img/add.png");
+    }
+}
+
+/*  TODO
+ *  convertImg()
+ *   Takes the inputted file image and returns the base64 image that can be 
+ *   stored in local storage and read into by list.html.  Called from 
+ *   updateImage(input)
+ */
+function convertImg(){
+
 }
 
 /*
@@ -181,7 +221,7 @@ function isAHabit(habit){
     
     var habitFields = ["id", "title", "image", "weekFreq", "dailyFreq", "other", "ticks", "bestRecord", "currentStreak", "date"];
     var i;
-    for(i = 0; i < 10; i++){
+    for(i = 0; i < k.length; i++){
         if(habitFields[i] !== k[i]){
             alert("ERROR: Attempted to enter an invalid habit into database");
 		    return false;
