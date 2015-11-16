@@ -1,5 +1,7 @@
 // from Mozilla Dev Network
 // modified for modular use in our app
+
+var notify = {}
 function pushNotify(strToDisplay) {
     if (Notification.permission === "granted") {
         // If it's okay, create a notification
@@ -34,4 +36,8 @@ function delayedNotification(strToDisplay, timerInMiSeconds){
             });
         }
     }, timerInMiSeconds);
+}
+
+function createNotification(habbitStr, timesPerDay, days){
+	
 }
