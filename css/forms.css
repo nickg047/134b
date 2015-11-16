@@ -51,6 +51,7 @@ img.icon{
 	transform: scale(1);
 	-webkit-transition: .3s ease-in-out;
 	transition: .3s ease-in-out;
+    display:inline-block;
 }
 @media (max-width: 500px) {
   div.forms {
@@ -109,6 +110,24 @@ img.icon:hover{
 	transform: scale(1.3);
 	cursor: pointer;
 }
+
+.imgUpload > input{
+    display:none;
+}
+
+div.icon-list{
+	width: 60px;
+	height: 60px;
+	margin-right: 10px;
+	border-radius: 15px;
+	-webkit-transform: scale(1);
+	transform: scale(1);
+	-webkit-transition: .3s ease-in-out;
+	transition: .3s ease-in-out;
+    display:inline;
+}
+
+
 span#others_text{
 	padding-right: 5px;
 }
