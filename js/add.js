@@ -1,5 +1,10 @@
 image = null;
 
+/*
+ *  selectImage(name)
+ *   When choosing a icon this will put a blue border around only the selected
+ *   icon. It then sets the image for the habit to be this one
+ */
 function selectImage(name) {
 //Clear all the other effects
     document.getElementById('icon1').style.border = "none";
@@ -8,9 +13,28 @@ function selectImage(name) {
     image = document.getElementById(name);
     image.style.border = "5px solid #42A5F5";
 }
+
 /*
-	gets variables for habit from html form
-*/
+ *  selectCheckBox(dayName){
+ *   When choosing a dailyFrequency only allow one to be chosen
+ */
+function selectCheckBox(dayName){
+    if(dayName !== 1){
+        document.getElementById("df1").checked = false           
+    }
+    if(dayName !== 2){
+        document.getElementById("df2").checked = false
+    }
+    if(dayName !== 3){
+        document.getElementById("df3").checked = false
+    }
+}
+
+/*
+ *  addFromUI
+ *   Gets variables for habit from the inputs on the screen. Has safeguards to
+ *   protect from improper input. Once done, move towards the listing page.
+ */
 function addFromUI() {
     //Check to make sure input is valid
     if (image === null){
@@ -53,7 +77,12 @@ function addFromUI() {
     location.href='list.html'; 
 }
 
-function errorNeedToPickImage(){ //this could also be preset, which is how it is in the todo list, so this error is never thrown
+
+/*
+ *  errorNeedTo___()
+ *   Send a javascript alert that you have a improper field entry
+ */
+function errorNeedToPickImage(){
     alert("Select an image before saving");
 }
 function errorNeedToChooseTitle(){
@@ -63,6 +92,11 @@ function errorNeedToChooseFrequency(){
     alert("Choose a weekly and daily frequency before saving");
 }
 
+/*
+ *  getDailyCount()
+ *   Return what should be the dailyFreq. If there is input in the other box
+ *   than that gets priority over the count chosen by the checkbox.   
+ */
 function getDailyCount(){
     var daily = document.getElementById("others").value;
     if(isInt(daily)){
@@ -80,6 +114,10 @@ function getDailyCount(){
     }
 }
 
+/*
+ *  isInt(data)
+ *   Return true if the data is an integer.
+ */
 function isInt(data){
     if (data != parseInt(data, 10))
         return false;
@@ -90,11 +128,13 @@ function isInt(data){
     return true;
 }
 /*
-	gets called from addFromUI() 
-	habit: habit to be added 
-*/
+ *  addHabit(habit)
+ *   Gets called from addFromUI(), add the param habit into the stored
+ *   database.
+ */
 function addHabit(habit) {       
-    		        
+    if(!isAHabit(habit)){return;} //Safeguard
+    
     //Get stored data
     var habits = JSON.parse(localStorage.getItem('Habits'));
     //If no stored data, create empty array
@@ -109,6 +149,12 @@ function addHabit(habit) {
     localStorage.setItem("Habits", JSON.stringify(habits));
     return true;		        			    
 }
+
+/*
+ *  getCheckedBoxes(chkboxName)
+ *   Goes to the weekly or daily checkboxes and returns an array of 0s and 1s 
+ *   if that checkbox was checked.
+ */
 function getCheckedBoxes(chkboxName) {
     var checkboxes = document.getElementsByName(chkboxName);
     var checkboxesChecked = [];
@@ -120,4 +166,26 @@ function getCheckedBoxes(chkboxName) {
         }
     }
     return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+}
+
+/*
+ *  isAHabit(habit)
+ *   Determines the field names of an object, if they do not match up with
+ *   what should be the field names of a habit than return false. Used to
+ *   verify/protect input into database.
+ */
+function isAHabit(habit){
+    //Get the fields
+    var k=[],p;
+        for (p in habit) if (Object.prototype.hasOwnProperty.call(habit,p)) k.push(p);
+    
+    var habitFields = ["id", "title", "image", "weekFreq", "dailyFreq", "other", "ticks", "bestRecord", "currentStreak", "date"];
+    var i;
+    for(i = 0; i < 10; i++){
+        if(habitFields[i] !== k[i]){
+            alert("ERROR: Attempted to enter an invalid habit into database");
+		    return false;
+		}
+    }
+    return true;
 }

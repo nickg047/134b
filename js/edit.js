@@ -112,6 +112,23 @@ function getCheckedBoxes(chkboxName) {
     }
     return checkboxesChecked.length > 0 ? checkboxesChecked : null;
 }
+
+/*
+ *  selectCheckBox(dayName){
+ *   When choosing a dailyFrequency only allow one to be chosen
+ */
+function selectCheckBox(dayName){
+    if(dayName !== 1){
+        document.getElementById("df1").checked = false           
+    }
+    if(dayName !== 2){
+        document.getElementById("df2").checked = false
+    }
+    if(dayName !== 3){
+        document.getElementById("df3").checked = false
+    }
+}
+
 function getAllHabits(){
     var habits = JSON.parse(localStorage.getItem("Habits"));
     if (!habits){

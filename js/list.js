@@ -28,8 +28,8 @@ function getHabitById(habitId){
 
 /*
  *  updateHabit(habitToUpdate)
- *   Takes in a habit as a parameter and swaps it into the 
- *   habit object list and re-writes this into the database.
+ *   Takes in a habit as a parameter and swaps it into the habit object list 
+ *   and re-writes this into the database.
  */
 function updateHabit(habitToUpdate){
     var habits = getAllHabits();
@@ -46,8 +46,8 @@ function updateHabit(habitToUpdate){
 
 /*
  *  updateHabitUI
- *   For all the habits within our list, make the HTML element using
- *   a method call and append it to the list. Seperate habits that
+ *   For all the habits within our list, make the HTML element using a 
+ *   method call and append it to the list. Seperate habits that
  *   are scheduled today vs not if necessary
  */
 function updateHabitUI(){
@@ -68,13 +68,8 @@ function updateHabitUI(){
     }
     
     if(othersExist){
-        var seperator = document.createElement('li');
-        seperator.innerHTML = '<h1> Other Habits </h1>'
-        //Couldn't get it to work in CSS file so manually here
-        seperator.style.height = '50px';
-        seperator.style.background= 'none';
-        seperator.style.border = 'none';
-        list.appendChild(seperator);
+        //Make the separation between habits scheduled for today and those not
+        list.appendChild(makeSeparatorElement());
         
         for (var i = 0; i < habits.length; i++){
             habit = habits[i];
@@ -88,16 +83,32 @@ function updateHabitUI(){
     
 }
 
+/*
+ *  makeSeparatorElement()
+ *   Returns an <li> which will be appended in the main habit-list to show the
+ *   separation between habits scheduled for today and the other ones.
+ */
+function makeSeparatorElement(){
+    var separator = document.createElement('li');
+    separator.innerHTML = '<h1> Other Habits </h1>'
+    //Couldn't get it to work in CSS file so manually here
+    separator.id = "separator";
+    separator.style.height = '50px';
+    separator.style.background= 'none';
+    separator.style.border = 'none';
+    
+    return separator;    
+}
+
 //On loading the script for this class updateHabitUI
 //so on page load it draws everything
 updateHabitUI();
 
 /*
  *  makeHtmlElement(habit)
- *   Takes in a habit object and uses its information to make a 
- *   list element for UI to be appended to the list. It builds off
- *   of the 'template' div in list.html. Sets title, image, text info,
- *   buttons. Called from updateHabitUI
+ *   Takes in a habit object and uses its information to make a list element 
+ *   for UI to be appended to the list. It builds off of the 'template' div in
+ *   list.html. Sets title, image, text, buttons. Called from updateHabitUI
  */ 
 function makeHtmlElement(habit){
     var listItem = document.createElement('li');
@@ -136,8 +147,8 @@ function makeHtmlElement(habit){
 
 /*
  *  setCompletionText(listElement, habit)
- *   Updates the UI of the currentStreak, bestRecord, and your
- *   progress on completing a habit for today
+ *   Updates the UI of the currentStreak, bestRecord, and your progress on 
+ *   completing a habit for today
  */
 function setCompletionText(listElement, habit){
     listElement.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.currentStreak;
@@ -147,8 +158,7 @@ function setCompletionText(listElement, habit){
 
 /*
  *  todayIsUpdateDay(habit)
- *   Checks if this habit is scheduled for today, and if today
- *   is in fact that day.  
+ *   Checks if this habit is scheduled for today, and if today is that day 
  *   Return boolean
  */
 function todayIsUpdateDay(habit){
@@ -164,8 +174,8 @@ function todayIsUpdateDay(habit){
 
 /*
  *  showTodaysCompletions(listElement)
- *   Used when you have hitten a check mark to show the progress
- *   you have made with a text indication.
+ *   Used when you have hitten a check mark to show the progress you have made
+ *   with a text indication.
  */
 function showTodaysCompletions(listElement){
     var msgElement = listElement.getElementsByClassName("message-today")[0];
@@ -183,9 +193,8 @@ function completedHabit(habit){
 
 /*
  *  showCompleteButton(listElement, willShow)
- *   Hides the green checkmark of this listElement habit
- *   This is done on habits which are not scheduled to have
- *   been completed today
+ *   Hides the green checkmark of this listElement habit. This is done on 
+ *   habits which are not scheduled to have been completed today.
  *   listItem is the habit, willShow is boolean
  */
 function showCompleteButton(listElement, willShow){
@@ -199,8 +208,8 @@ function showCompleteButton(listElement, willShow){
 
 /*
  *  setMeter(listItem, habit)
- *   Updates the UI of a habit when you increment your
- *   ticks for today. Grows the status bar
+ *   Updates the UI of a habit when you increment your ticks for today. Grows
+ *   the status bar
  */      
 function setMeter(listItem, habit){
     var line1 = listItem.getElementsByClassName('meter')[0];
@@ -217,10 +226,9 @@ function setMeter(listItem, habit){
 
 /*
  *  completeHabit(id_param)
- *   Called when you hit the checkmark
- *   Increment the ticks for how many times you completed the
- *   habit today. Also contains the implementatin for updating
- *   your currentStreak and bestRecord, also calls UI updates
+ *   Called when you hit the checkmark. Increment the ticks for how many times
+ *   you completed the habit today. Also contains the implementatin for 
+ *   updating your currentStreak and bestRecord, also calls UI updates.
  */
 function completeHabit(id_param){
     var listElement = getHabitElement(id_param);
@@ -243,8 +251,7 @@ function completeHabit(id_param){
 
 /*
  *  getHabitElement(clickElement)
- *   Return the list element <li> of this habit
- *   Used in completeHabit
+ *   Return the list element <li> of this habit. Used in completeHabit.
  */
 function getHabitElement(clickElement){
     return clickElement.parentNode.parentNode;
@@ -252,11 +259,15 @@ function getHabitElement(clickElement){
 
 /*
  *  onDeletePress(id_param)
- *   Called when you hit the red delete button
- *   Deletes it from the UI by deleting list element and
- *   calls deleteHabit to remove from database
+ *   Called when you hit the red delete button. Deletes it from the UI by 
+ *   deleting list element and calls deleteHabit to remove from database. 
+ *   Removes 'Other Habits' heading if there are none.
  */
 function onDeletePress(id_param){
+    if(!confirm("Are you sure you want to delete this habit?")){
+        return;
+    }
+
     var listItem = id_param.parentNode.parentNode;
     var listContainer = listItem.parentNode;
 
@@ -264,12 +275,14 @@ function onDeletePress(id_param){
     deleteHabit(id);
 
     listContainer.removeChild(listItem); 
+    if(listContainer.children[(listContainer.children.length)-1].id === "separator"){
+        listContainer.removeChild(listContainer.children[(listContainer.children.length)-1]);
+    }    
 }
 
 /*
  *  deleteHabit(habitId)
- *   Deleting the habit instance from our database
- *   Called from onDeletePress 
+ *   Deleting the habit instance from our database. Called from onDeletePress 
  */
 function deleteHabit(habitId){
     var habits = getAllHabits();
