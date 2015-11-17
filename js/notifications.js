@@ -6,7 +6,7 @@ var notifications = {
     // desired performance and operation
     timer:{
         currentTimer: 0, // the current timer value
-        storedTimer: 0, // stores what the timer is/was, used for resuming the timer after a clear
+        intervalTimer: null, // stores the interval timer object
         oneSecond: 1000, // the number of timer units in a second
         oneMinute: 1000 * 60, // the number of timer units in a minute
         oneHour: 1000 * 60 * 60, // the number of timer units in an hour
@@ -44,7 +44,8 @@ var notifications = {
         // direct sets the timer assuming input is in timer units
         setTimerRaw: function(timerUnits){
             notifications.timer.currentTimer = timerUnits;
-            notifications.timer.storedTimer = timerUnits;
+            notifications.timer.clearTimer();
+            notifications.startNotification();
         },
 
         // converts the given number of seconds into timer units and sets the timer
@@ -82,14 +83,11 @@ var notifications = {
             return notifications.timer.convertTimerUnitsToHours(notifications.timer.getCurrentTimerRaw());
         },
 
-        // sets the current timer to 0, leaves the stored timer alone so that the timer can be restored
+        // stops the interval timer
         clearTimer: function(){
-            notifications.timer.currentTimer = 0;
-        },
-
-        // copies the stored timer back into the current timer
-        resumeTimer: function(){
-            notifications.timer.currentTimer = notifications.timer.storedTimer;
+            if(notifications.timer.intervalTimer != null) {
+                clearInterval(notifications.timer.intervalTimer);
+            }
         }
     },
 
@@ -162,23 +160,17 @@ var notifications = {
     // notifications will be displayed.
     // Also, no notifications are displayed if numHabits is 0.
     startNotification: function() {
-        setTimeout(function () {
+        notifications.timer.intervalTimer = setInterval(function () {
             notifications.updateTodaysHabits();
-            if (notifications.numHabits != 0 && notifications.timer.getCurrentTimerRaw()) {
+            if (notifications.numHabits != 0) {
                 notifications.pushNotify("You have ".concat(notifications.numHabits.toString()).concat(" incomplete tasks"));
             }
-            notifications.startNotification();
         }, notifications.timer.getCurrentTimerRaw());
     },
 
     // stops new push notifications from being displayed until resumeNotifications is called
     disableNotifications: function(){
         notifications.timer.clearTimer();
-    },
-
-    // if disableNotifications has been called, this will resume displaying push notifications to the user
-    resumeNotifications: function(){
-        notifications.timer.resumeTimer();
     }
 };
 
@@ -186,8 +178,5 @@ var notifications = {
  * This Section sets up and launches the notification system for any page that includes this .js file *
  ******************************************************************************************************/
 
-// set the notification interval
-notifications.timer.setTimerInSeconds(3);
-
-// begin notification process
-notifications.startNotification();
+// set the notification interval and starts the timer
+notifications.timer.setTimerInHours(1);
