@@ -1,12 +1,103 @@
 var notifications = {
-    timer: 0,
-    setTimer: function(timer){
-        notifications.timer = timer;
+    numHabits: 0, // number of today's incomplete habits, set by updateTodaysHabits()
+
+    // timer object holds all the variables and functions that control the timer
+    // variable behavior. Used to try and keep timer data valid for ensuring
+    // desired performance and operation
+    timer:{
+        currentTimer: 0, // the current timer value
+        storedTimer: 0, // stores what the timer is/was, used for resuming the timer after a clear
+        oneSecond: 1000, // the number of timer units in a second
+        oneMinute: 1000 * 60, // the number of timer units in a minute
+        oneHour: 1000 * 60 * 60, // the number of timer units in an hour
+
+        // converts a given number of seconds into timer units
+        convertSecondsToTimerUnits: function(seconds) {
+            return seconds * notifications.timer.oneSecond;
+        },
+
+        // converts a given number of minutes into timer units
+        convertMinutesToTimerUnits: function(minutes){
+            return minutes * notifications.timer.oneMinute;
+        },
+
+        // converts a given number of hours into timer units
+        convertHoursToTimerUnits: function(hours){
+            return hours * notifications.timer.oneHour;
+        },
+
+        // converts the given number of timer units into seconds
+        convertTimerUnitsToSeconds: function(timerUnits){
+            return timerUnits / notifications.timer.oneSecond;
+        },
+
+        // converts the given number of timer units into minutes
+        convertTimerUnitsToMinutes: function(timerUnits){
+            return timerUnits / notifications.timer.oneMinute;
+        },
+
+        // converts the given number of timer units into hours
+        convertTimerUnitsToHours: function(timerUnits){
+            return timerUnits / notifications.timer.oneHour;
+        },
+
+        // direct sets the timer assuming input is in timer units
+        setTimerRaw: function(timerUnits){
+            notifications.timer.currentTimer = timerUnits;
+            notifications.timer.storedTimer = timerUnits;
+        },
+
+        // converts the given number of seconds into timer units and sets the timer
+        setTimerInSeconds: function(seconds){
+            notifications.timer.setTimerRaw(notifications.timer.convertSecondsToTimerUnits(seconds));
+        },
+
+        // converts the given number of minutes into timer units and sets the timer
+        setTimerInMinutes: function(minutes){
+            notifications.timer.setTimerRaw(notifications.timer.convertMinutesToTimerUnits(minutes));
+        },
+
+        // converts the given number of hours into timer units and sets the timer
+        setTimerInHours: function(hours){
+            notifications.timer.setTimerRaw(notifications.timer.convertHoursToTimerUnits(hours));
+        },
+
+        // returns the current value of the timer in timer units
+        getCurrentTimerRaw: function(){
+            return notifications.timer.currentTimer;
+        },
+
+        // returns the current value of the timer in seconds
+        getCurrentTimerSeconds: function(){
+            return notifications.timer.convertTimerUnitsToSeconds(notifications.timer.getCurrentTimerRaw());
+        },
+
+        // returns the current value of the timer in minutes
+        getCurrentTimerMinutes: function(){
+            return notifications.timer.convertTimerUnitsToMinutes(notifications.timer.getCurrentTimerRaw());
+        },
+
+        // returns the current value of the timer in hours
+        getCurrentTimerHours: function(){
+            return notifications.timer.convertTimerUnitsToHours(notifications.timer.getCurrentTimerRaw());
+        },
+
+        // sets the current timer to 0, leaves the stored timer alone so that the timer can be restored
+        clearTimer: function(){
+            notifications.timer.currentTimer = 0;
+        },
+
+        // copies the stored timer back into the current timer
+        resumeTimer: function(){
+            notifications.timer.currentTimer = notifications.timer.storedTimer;
+        }
     },
+
+    // create a push notification that displays the string passed to the function
     pushNotify: function(strToDisplay){
         if (Notification.permission === "granted") {
             // If it's okay, create a notification
-            var notification = new Notification(strToDisplay);
+            new Notification(strToDisplay);
         }
 
         // Otherwise, ask the user for permission
@@ -14,11 +105,14 @@ var notifications = {
             Notification.requestPermission(function (permission) {
                 // If the user accepts, create a notification
                 if (permission === "granted") {
-                    var notification = new Notification(strToDisplay);
+                    new Notification(strToDisplay);
                 }
             });
         }
     },
+
+    // from list.js
+    // used to get all habits from the local storage
     getAllHabits: function(){
         var habits = JSON.parse(localStorage.getItem("Habits"));
         if (!habits){
@@ -27,6 +121,9 @@ var notifications = {
         }
         return habits;
     },
+
+    // from list.js
+    // used to filter out habits that do/do not occur today
     todayIsUpdateDay: function(habit){
         var date = new Date();
         var day = date.getDay();
@@ -37,14 +134,15 @@ var notifications = {
         }
         return true;
     },
+
+    // from list.js
+    // used to check if a given habit has been completed
     completedHabit: function(habit){
         return habit.ticks == habit.dailyFreq;
     },
-    numHabits: 0,
-    updateNumHabits: function(num){
-        notifications.numHabits = num;
-    },
-    updateNumOfHabitsForToday: function(){
+
+    // sets numHabits to the number of habits that are currently incomplete for today
+    updateTodaysHabits: function(){
         var habitsList = notifications.getAllHabits();
         var counter = 0;
         var result = 0;
@@ -56,31 +154,40 @@ var notifications = {
                 }
             }
         }
+        notifications.numHabits = result;
+    },
 
-        notifications.updateNumHabits(result);
-    },
-    keepNotifying: function(){
-        if(notifications.numHabits){
-            return true;
-        } else {
-            return false;
-        }
-    },
-    notifyStr: function(){
-        return "You have ".concat(notifications.numHabits.toString()).concat(" incomplete tasks");
-    },
+    // begin displaying push notifications at the interval specified in timer
+    // if timer is set to stop, the function will continue to execute however no
+    // notifications will be displayed.
+    // Also, no notifications are displayed if numHabits is 0.
     startNotification: function() {
-        if (notifications.timer) {
-            setTimeout(function () {
-                notifications.updateNumOfHabitsForToday();
-                if (notifications.keepNotifying()) {
-                    notifications.pushNotify(notifications.notifyStr());
-                }
-                notifications.startNotification();
-            }, notifications.timer);
-        }
+        setTimeout(function () {
+            notifications.updateTodaysHabits();
+            if (notifications.numHabits != 0 && notifications.timer.getCurrentTimerRaw()) {
+                notifications.pushNotify("You have ".concat(notifications.numHabits.toString()).concat(" incomplete tasks"));
+            }
+            notifications.startNotification();
+        }, notifications.timer.getCurrentTimerRaw());
+    },
+
+    // stops new push notifications from being displayed until resumeNotifications is called
+    disableNotifications: function(){
+        notifications.timer.clearTimer();
+    },
+
+    // if disableNotifications has been called, this will resume displaying push notifications to the user
+    resumeNotifications: function(){
+        notifications.timer.resumeTimer();
     }
 };
 
-notifications.setTimer(3000);
+/******************************************************************************************************
+ * This Section sets up and launches the notification system for any page that includes this .js file *
+ ******************************************************************************************************/
+
+// set the notification interval
+notifications.timer.setTimerInSeconds(3);
+
+// begin notification process
 notifications.startNotification();
