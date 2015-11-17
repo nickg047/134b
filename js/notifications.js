@@ -1,6 +1,6 @@
 var notifications = {
     numHabits: 0, // number of today's incomplete habits, set by updateTodaysHabits()
-
+	displayPageLoadNotifications: true, // sets whether to display notifications on page load
     // timer object holds all the variables and functions that control the timer
     // variable behavior. Used to try and keep timer data valid for ensuring
     // desired performance and operation
@@ -171,7 +171,17 @@ var notifications = {
     // stops new push notifications from being displayed until resumeNotifications is called
     disableNotifications: function(){
         notifications.timer.clearTimer();
-    }
+    },
+
+	// call this function to display notifications on page load
+	pageLoadNotifications: function(){
+		if(notifications.displayPageLoadNotifications){
+			notifications.updateTodaysHabits();
+        	if (notifications.numHabits != 0) {
+        		notifications.pushNotify("You have ".concat(notifications.numHabits.toString()).concat(" incomplete tasks"));
+        	}
+		}
+	}
 };
 
 /******************************************************************************************************
@@ -180,3 +190,8 @@ var notifications = {
 
 // set the notification interval and starts the timer
 notifications.timer.setTimerInHours(1);
+
+// display notification on page load
+// set notifications.displayPageLoadNotifications to false to disable
+// notifications.displayPageLoadNotifications = false;
+notifications.pageLoadNotifications();
