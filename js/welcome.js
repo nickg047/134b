@@ -6,7 +6,7 @@ if (!loggedIn()){
 
 function onClick(){
 	if (loggedIn()){
-		location.href='list.html'
+		location.href='add.html'
 	}else{
 		location.href='login.html'
 	}

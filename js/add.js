@@ -50,8 +50,22 @@ function updateImage(input){
  *   stored in local storage and read into by list.html.  Called from 
  *   updateImage(input)
  */
-function convertImg(){
-
+function convertImg(img){
+    var data, canvas, ctx;
+    //Create the canvas element.
+    canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    // Get '2d' context and draw the image.
+    ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    // Get canvas data URL
+    try{
+        data = canvas.toDataURL();
+    }catch(e){
+        alert("Error converting inputted image");
+    }
+    return data;
 }
 
 /*
