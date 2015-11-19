@@ -16,6 +16,18 @@ function selectImage(id_param) {
     image.style.border = "5px solid #42A5F5";
 }
 
+
+document.getElementById("df1").checked = true
+document.getElementById("defaultWeeklyFrequency").checked = true
+
+function inputCheck(){
+    var potentialNumber = document.getElementById('others').value;
+    selectCheckBox(-1);
+    if (!isInt(potentialNumber)){
+        document.getElementById("df1").checked = true;
+    }
+}
+
 /*
  *  updateImage(input)
  *   Turn the add image into a new image and save this new image as the
@@ -82,9 +94,6 @@ function selectCheckBox(dayName){
     }
     if(dayName !== 3){
         document.getElementById("df3").checked = false
-    }
-    if(dayName !== -1){
-    		document.getElementById("others").value = "";
     }
 }
 

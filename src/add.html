@@ -32,7 +32,7 @@
 				
 				<p><label>Weekly Frequency</label></p>
 				<div id="ck-button">
-					<label> <input type="checkbox" name="date" value="sunday"><span>Sun</span></label>
+					<label> <input type="checkbox" id="defaultWeeklyFrequency" name="date" value="sunday"><span>Sun</span></label>
 					<label> <input type="checkbox" name="date" value="monday"><span>Mon</span></label>
 					<label> <input type="checkbox" name="date" value="tuesday"><span>Tue</span></label>
 					<label> <input type="checkbox" name="date" value="wednesday"><span>Wed</span></label>
@@ -49,7 +49,7 @@
 					<label> <input id = "df3" type="checkbox" onclick = "selectCheckBox(3);" name="day" value="3"><span>3</span></label>
 					<span id="times">times</span>
 				</div>
-				<p><label><span id="others_text">Other Daily Frequencies</span><input id="others" type="text" name="day" placeholder="More than 3 times" onkeypress=selectCheckBox(-1)></label></p>
+				<p><label><span id="others_text">Other Daily Frequencies</span><input id="others" type="text" name="day" placeholder="More than 3 times" onkeyup=inputCheck()></label></p>
 				<p id="save_p"><input id="save" type="button" value="Save It" onclick="addFromUI()"></p>
 				
 			</form>
