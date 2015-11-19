@@ -70,7 +70,8 @@ function convertImg(img){
 
 /*
  *  selectCheckBox(dayName){
- *   When choosing a dailyFrequency only allow one to be chosen
+ *   When choosing a dailyFrequency only allow one to be chosen and remove the
+ *   text within the other daily frequencies tab.
  */
 function selectCheckBox(dayName){
     if(dayName !== 1){
@@ -82,6 +83,9 @@ function selectCheckBox(dayName){
     if(dayName !== 3){
         document.getElementById("df3").checked = false
     }
+    if(dayName !== -1){
+    		document.getElementById("others").value = "";
+    }
 }
 
 /*
@@ -91,36 +95,44 @@ function selectCheckBox(dayName){
  */
 function addFromUI() {
     //Check to make sure input is valid
+    if (document.getElementById('title').value.length == 0){
+        errorNeedToChooseTitle();
+		return;
+    } 
     if (image === null){
         errorNeedToPickImage();
         return;
     }
-    if (document.getElementById('title').value.length == 0){
-        errorNeedToChooseTitle();
+    if (!isInt(document.getElementById('others').value) && document.getElementById('others').value.length > 0){
+        errorNeedProperFrequencyRange()
 		return;
-    }    
-    
+    }
+    var dailyCount = getDailyCount();
+    var weeklyCount = getCheckedBoxes('date');
+    if (dailyCount === null || dailyCount === 0 || sumArray(weeklyCount) == 0){
+        errorNeedToChooseFrequency();
+		return;
+    }
+    if(document.getElementById('others').value > 1000){
+        errorNeedProperFrequencyRange()
+		return;
+    }
+      
     var habits = JSON.parse(localStorage.getItem('Habits'));
     var newHabitId;
-    if (habits === null || habits.length === 0){//Is so because initialized to Habits: []
+    if (habits === null || habits.length === 0){
         newHabitId = 0;
     }else {
         var prevHabit = habits[habits.length-1];
         newHabitId = prevHabit.id + 1;
     }
-    var dailyCount;
-    if(getCheckedBoxes('day') !== null){
-       dailyCount = getCheckedBoxes('day');
-    }
-    else{
-       dailyCount = [document.getElementById("others").value];
-    }
-	var habit = {
+
+    var habit = {
         id: newHabitId,
         title: document.getElementById('title').value,
         image: image.src,
-        weekFreq: getCheckedBoxes('date'),
-        dailyFreq: getDailyCount(),
+        weekFreq: weeklyCount,
+        dailyFreq: dailyCount,
         other: document.getElementById('others').value,
         ticks: 0,
         bestRecord: 0,
@@ -129,21 +141,6 @@ function addFromUI() {
     };
     addHabit(habit);
     location.href='list.html'; 
-}
-
-
-/*
- *  errorNeedTo___()
- *   Send a javascript alert that you have a improper field entry
- */
-function errorNeedToPickImage(){
-    alert("Select an image before saving");
-}
-function errorNeedToChooseTitle(){
-    alert("Choose a title before saving");
-}
-function errorNeedToChooseFrequency(){
-    alert("Choose a weekly and daily frequency before saving");
 }
 
 /*
@@ -164,7 +161,7 @@ function getDailyCount(){
                 return i + 1;
             }
         }
-        return 1;
+        return 0;
     }
 }
 
@@ -221,6 +218,17 @@ function getCheckedBoxes(chkboxName) {
     }
     return checkboxesChecked.length > 0 ? checkboxesChecked : null;
 }
+  
+function sumArray(arr){
+    if(arr == null){return 0;}
+    var _i = 0;
+    var _l = arr.length;
+    var sum = 0;
+    for(_i; _i < _l ; _i++){
+        sum += arr[_i];
+    }
+    return sum;
+}
 
 /*
  *  isAHabit(habit)
@@ -242,4 +250,28 @@ function isAHabit(habit){
 		}
     }
     return true;
+}
+
+/*
+ *  errorNeedTo___()
+ *   Send a javascript alert that you have a improper field entry
+ */
+function errorNeedToPickImage(){
+    alert("Select an image before saving");
+}
+function errorNeedToChooseTitle(){
+    alert("Choose a title before saving");
+    document.getElementById("title").placeholder = "Please Set A Title";
+    document.getElementById("title").className += " error";
+}
+
+function errorNeedToChooseFrequency(){
+    alert("Choose a proper weekly and daily frequency before saving");
+}
+
+function errorNeedProperFrequencyRange(){
+    document.getElementById("others").value = "";
+    document.getElementById("others").placeholder = "Number 1-1000";
+    document.getElementById("others").className += " error";
+    alert("Please choose a frequency to be a number between\n1 and 1000");    
 }

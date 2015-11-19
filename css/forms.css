@@ -29,6 +29,20 @@ div.forms {
 	border-radius: 25px;
 	bottom: auto;
 }
+
+/* Edits the placeholder text to be red */
+input.error::-webkit-input-placeholder{
+    color: #FF3333;
+}
+input.error:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #FF3333;
+}
+input.error:::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #FF3333;
+}
+input.error::-ms-input-placeholder { /* Internet Explorer 10+ */
+    color: #FF3333;
+}
 input#title{
 	height: 30px;
 	width: 350px;
