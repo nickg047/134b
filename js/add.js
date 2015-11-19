@@ -19,8 +19,9 @@ function selectImage(id_param) {
 selectImage('icon1');
 
 
-document.getElementById("df1").checked = true
-document.getElementById("defaultWeeklyFrequency").checked = true
+document.getElementById("df1").checked = true;
+document.getElementById("defaultWeeklyFrequency").checked = true;
+//document.getElementById("file-input").onchange = updateImage;
 
 function inputCheck(){
     var potentialNumber = document.getElementById('others').value;
@@ -39,6 +40,7 @@ function inputCheck(){
  *   INTO LOCAL STORAGE AND USED IN ANOTHER FILE
  */
 function updateImage(input){
+    alert(input.files[0]);
     var imgU = URL.createObjectURL(input.files[0]);
     if(imgU !== "null"){
         //Add in the new img element
@@ -141,7 +143,7 @@ function addFromUI() {
     var habit = {
         id: newHabitId,
         title: document.getElementById('title').value,
-        image: image.src,
+        image: getBase64Image(document.getElementById('icon4')),
         weekFreq: weeklyCount,
         dailyFreq: dailyCount,
         other: document.getElementById('others').value,
@@ -152,6 +154,19 @@ function addFromUI() {
     };
     addHabit(habit);
     location.href='list.html'; 
+}
+
+function getBase64Image(img) {
+    var canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+
+    var dataURL = canvas.toDataURL("image/png");
+
+    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
 }
 
 /*

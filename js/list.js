@@ -120,7 +120,7 @@ function makeHtmlElement(habit){
     listItem.getElementsByClassName("habit-name")[0].innerHTML = habit.title;
 
     //Image
-    listItem.getElementsByClassName("habit-icon")[0].src = habit.image;
+    listItem.getElementsByClassName("habit-icon")[0].src = "data:image/png;base64," + habit.image;
     listItem.getElementsByClassName("habit-name")[0].innerHTML.alt = habit.image.substring(habit.image.lastIndexOf("/")+1);
     //Stats
     listItem.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.currentStreak;
