@@ -16,6 +16,8 @@ function selectImage(id_param) {
     image.style.border = "5px solid #42A5F5";
 }
 
+selectImage('icon1');
+
 
 document.getElementById("df1").checked = true
 document.getElementById("defaultWeeklyFrequency").checked = true
