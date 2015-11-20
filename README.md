@@ -1,14 +1,15 @@
-CSE 134B Github Repo
-Homework #4 - Working Prototype with JavaScript
-Authors: Jackson Davenport, Nicholas G,  Anna Lebedeva, Daniel Kim, Charles McKay
+CSE 134B Github Repo  
+Homework #4 - Working Prototype with JavaScript  
+Authors: Jackson Davenport, Nicholas G,  Anna Lebedeva, Daniel Kim, Charles McKay  
 
-HTML Files: welcome, login, add, list
-Javascript Files: welcome, login, parse, notifications, add, list
-CSS Files: welcome, login, forms, default, list
+HTML Files: welcome, login, add, list  
+Javascript Files: welcome, login, parse, notifications, add, list  
+CSS Files: welcome, login, forms, default, list  
 
 Start with opening up welcome.html  
 For this prototype our pseudo-database is localStorage, which stores you're 
 PARSE identification and habits.
+_______________________________________________________________________________
 ________________________________________________________________________________
 
 welcome.html will welcome you to the app. It will ask you to create an account, which through 
