@@ -285,19 +285,33 @@ function getHabitElement(clickElement){
  *   Removes 'Other Habits' heading if there are none.
  */
 function onDeletePress(id_param){
-    if(!confirm("Are you sure you want to delete this habit?")){
-        return;
+    //show yes and no
+    var listElement = getHabitElement(id_param);
+    listElement.className = "removed-item";
+    listElement.getElementsByClassName("replace")[0].innerHTML = "<div class='para' style='color:#888;display:inline'>Are you sure? \
+                    <button type='button' class='yesbtn op-yesbtn op-del' style='color:white;font-size:16px'>Yes</button>  \
+                    <button type='button' class='nobtn op-yesbtn op-done' style='color:white;font-size:16px'>No</button></div>";  
+
+   // if delete, delete
+    var yb = listElement.getElementsByClassName('yesbtn')[0];
+    yb.onclick = function () {
+        var listItem = id_param.parentNode.parentNode;
+        var listContainer = listItem.parentNode;
+
+        var id = listItem.id;
+
+        deleteHabit(id);
+        listContainer.removeChild(listItem); 
+        if(listContainer.children[(listContainer.children.length)-1].id === "separator")
+            listContainer.removeChild(listContainer.children[(listContainer.children.length)-1]);
     }
 
-    var listItem = id_param.parentNode.parentNode;
-    var listContainer = listItem.parentNode;
-
-    var id = listItem.id;
-    deleteHabit(id);
-
-    listContainer.removeChild(listItem); 
-    if(listContainer.children[(listContainer.children.length)-1].id === "separator"){
-        listContainer.removeChild(listContainer.children[(listContainer.children.length)-1]);
+    // if no delete, put back delete button
+    var nb = listElement.getElementsByClassName('nobtn')[0];
+    nb.onclick = function() {
+        listElement.getElementsByClassName('nobtn')[0].remove();
+        listElement.getElementsByClassName('yesbtn')[0].remove();
+        listElement.getElementsByClassName('para')[0].innerHTML = "<p class='replace' style='display:inline'></p>";
     }    
 }
 

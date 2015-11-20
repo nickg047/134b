@@ -17,6 +17,26 @@ body{
 /* habit info */
 .habit-info{padding:0;margin-left:20px;}
 .habit-info>li{list-style:none; height:100%; padding:0; margin-right:5px; vertical-align: center;}
+.new-item {
+              opacity: 0;
+              -webkit-animation: new-item-animation .5s linear forwards;
+              -o-animation: new-item-animation .5s linear forwards;
+              animation: new-item-animation .5s linear forwards
+            }
+.removed-item {
+                  from {
+                    opacity: 0;
+                    -webkit-transform: translateY(-400px);
+                    -ms-transform: translateY(-400px);
+                    -o-transform: translateY(-400px);
+                    transform: translateY(-400px)
+                  }
+
+                  to {
+                    opacity: 1;
+                    transform : translateY(0)
+                  }
+                }
 .habit-name{margin:0; padding:0; height:100%; display:inline-block; vertical-align: middle; line-height:60px;color:#888;font-size: 24px;}
 .habit-icon{margin:0; border-radius:5px;width:100px; height:100px;}
 
@@ -29,6 +49,7 @@ body{
 .habit-op{position:absolute; right:5px;display:inline-block; height: 100%; line-height: 60px;width:100%;text-align:center;top:170px;margin:0 auto;}
 .habit-op img{height: 90%;}
 .op{width:60px; height:60px;margin-right:5px;border-radius: 50%; box-shadow: 0 0 3px gray; padding: 5px; vertical-align: middle;}
+.op-yesbtn{width:45px; height:45px;margin-right:5px;border-radius: 50%; box-shadow: 0 0 3px gray; padding: 5px; vertical-align: middle;}
 .op:hover{box-shadow: 0 0 5px gray;}
 .op:active{box-shadow: 0 0 10px gray;}
 .op:focus{outline-style:none;}
@@ -50,6 +71,63 @@ body{
 #addHabit:hover{background: rgba(33, 72, 100, 0.7); border:1px solid rgba(85,85,85,0.7); box-shadow: 0 0 5px gray;}
 #addHabit:active{border: 2px solid gray; background: rgba(33, 72, 100); box-shadow: 0 0 10px gray;}
 #addHabit:focus{outline-style:none;}
+
+.path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 20s linear forwards;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fadeIn{to{opacity: 1;}}
+@keyframes removed-item-animation {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+ 
+    100% {
+        opacity: 0;
+        transform: scale(4);
+    }
+}
+
+@keyframes openspace {
+  to {
+    height: auto
+  }
+}
+
+@-webkit-keyframes new-item-animation {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-400px);
+    transform: translateX(-400px)
+  }
+
+  to {
+    opacity: 1;
+    transform : translateX(0)
+  }
+}
+
+@-o-keyframes new-item-animation {
+  from {
+    opacity: 0;
+    -o-transform: translateX(-400px);
+    transform: translateX(-400px)
+  }
+
+  to {
+    opacity: 1;
+    transform : translateX(0)
+  }
+}
 
 /* phone */
 @media only screen

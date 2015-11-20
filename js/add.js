@@ -61,7 +61,7 @@ function updateImage(input){
 function isImageFile(fileName){
     if(fileName === null || fileName.indexOf(".") === -1)
         return false;
-		
+        
     var ext = fileName.split(".");
     ext = ext[ext.length-1];
     if(ext === "jpg" || ext === "png")
@@ -116,7 +116,7 @@ function addFromUI() {
     //Check to make sure input is valid
     if (document.getElementById('title').value.length == 0){
         errorNeedToChooseTitle();
-	return;
+    return;
     } 
     if (image === null){
         errorNeedToPickImage();
@@ -124,17 +124,17 @@ function addFromUI() {
     }
     if (!isInt(document.getElementById('others').value) && document.getElementById('others').value.length > 0){
         errorNeedProperFrequencyRange()
-	return;
+    return;
     }
     var dailyCount = getDailyCount();
     var weeklyCount = getCheckedBoxes('date');
     if (dailyCount === null || dailyCount === 0 || sumArray(weeklyCount) == 0){
         errorNeedToChooseFrequency();
-	return;
+    return;
     }
     if(document.getElementById('others').value > 1000){
         errorNeedProperFrequencyRange()
-	return;
+    return;
     }
 
     //End of error checks
@@ -277,7 +277,7 @@ function addHabit(habit) {
 
     //Save array
     localStorage.setItem("Habits", JSON.stringify(habits));
-    return true;		        			    
+    return true;                                
 }
 
 /*
@@ -327,8 +327,8 @@ function isAHabit(habit){
     for(i = 0; i < k.length; i++){
         if(habitFields[i] !== k[i]){
             alert("ERROR: Attempted to enter an invalid habit into database");
-		    return false;
-		}
+            return false;
+        }
     }
     return true;
 }
