@@ -154,16 +154,20 @@ function makeHtmlElement(habit){
     setCompletionText(listItem, habit);
     setMeter(listItem, habit);
 
-    if(!todayIsUpdateDay(habit)){
-        showCompleteButton(listItem, true);
-    }
-    else{
-        showCompleteButton(listItem, false);
-    }
-    
-    if(completedHabit(habit)){
+    if(todayIsUpdateDay(habit) && completedHabit(habit))
+    {
         showTodaysCompletions(listItem);
-        showCompleteButton(listItem, false);
+        showCompleteButton(listItem,false);
+    }
+    else if (todayIsUpdateDay(habit) && !completedHabit(habit)) 
+    {
+        showTodaysCompletions(listItem);
+        showCompleteButton(listItem,false);
+
+    }   
+    else 
+    {
+        showCompleteButton(listItem,true);
     }
     return listItem;
 }
