@@ -38,6 +38,10 @@ function inputCheck(){
  *   image you have selected
  */
 function updateImage(input){
+    if(!isImageFile(input.files[0].name)){
+        errorNeedToChooseProperImage();
+        return;
+    }
     var imgU = URL.createObjectURL(input.files[0]);
     if(imgU !== "null"){
         addNewImageChild(imgU);
@@ -47,6 +51,23 @@ function updateImage(input){
     }
 }
 
+/*
+ *  isImageFile
+ *   Checks to see if the filename string has a file extension of a
+ *   image that is upload-able. Returns boolean
+ */
+function isImageFile(fileName){
+    if(fileName === null || fileName.indexOf(".") === -1)
+        return false;
+		
+    var ext = fileName.split(".");
+    ext = ext[ext.length-1];
+    if(ext === "jpg" || ext === "png")
+        return true;
+    else
+        return false;
+}
+ 
 /*
  *  addNewImageChild(imageData)
  *   Add a new image based on the inputted file
@@ -325,12 +346,16 @@ function errorNeedProperFrequencyRange(){
     alert("Please choose a frequency to be a number between\n1 and 1000");    
 }
 
+function errorNeedToChooseProperImage(){
+    alert("Please choose a proper image to upload. We support JPEG and PNG");
+}
+
 function getHabitById(habitId){
     var habits = getAllHabits();
     var habit;
     for (var i = 0; i < habits.length; i++){
         habit = habits[i];
-        if (habitId ==- parseInt(habit.id)){
+        if (habitId === parseInt(habit.id)){
             return habit;
         }
     }
