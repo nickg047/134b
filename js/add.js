@@ -102,6 +102,9 @@ function selectCheckBox(dayName){
     if(dayName !== 3){
         document.getElementById("df3").checked = false
     }
+    if(dayName !== -1) {
+        document.getElementById('others').value = "";
+    }
 }
 
 /*
