@@ -120,6 +120,23 @@ var notifications = {
         return habits;
     },
 
+ 
+    //updateHabit(habitToUpdate) from list.js
+    //Takes in a habit as a parameter and swaps it into the habit object list 
+    //and re-writes this into the database.
+    updateHabit: function(habitToUpdate){
+        var habits = getAllHabits();
+        var habit;
+        for (var i = 0; i < habits.length; i++){
+            habit = habits[i];
+            if (habitToUpdate.id === habit.id){
+                habits[i] = habitToUpdate;
+                localStorage.setItem("Habits", JSON.stringify(habits));
+                return;
+            }
+        }
+    },
+    
     // from list.js
     // used to filter out habits that do/do not occur today
     todayIsUpdateDay: function(habit){
@@ -140,6 +157,7 @@ var notifications = {
     },
 
     // sets numHabits to the number of habits that are currently incomplete for today
+    // if a habit has not reached its goal frequency reset its currentStreak
     updateTodaysHabits: function(){
         var habitsList = notifications.getAllHabits();
         var counter = 0;
@@ -149,6 +167,8 @@ var notifications = {
             if(notifications.todayIsUpdateDay(currentHabit)){
                 if(!notifications.completedHabit(currentHabit)){
                     result++;
+			    currentHabit.currentStreak = 0;
+			    updateHabit(currentHabit);
                 }
             }
         }

@@ -92,7 +92,7 @@ updateHabitUI();
  */
 function makeSeparatorElement(){
     var separator = document.createElement('li');
-    separator.innerHTML = '<h1> Other Habits </h1>'
+    separator.innerHTML = '<h1>Other Habits</h1>'
     //Couldn't get it to work in CSS file so manually here
     separator.id = "separator";
     separator.style.height = '50px';
@@ -106,8 +106,9 @@ function makeSeparatorElement(){
 //so on page load it draws everything
 
 function isInt(data){
-    if (data != parseInt(data, 10))
+    if (data != parseInt(data, 10)){
         return false;
+    }
     data = parseInt(data, 10);
     if (data < 1){
         return false;
@@ -154,19 +155,15 @@ function makeHtmlElement(habit){
     setCompletionText(listItem, habit);
     setMeter(listItem, habit);
 
-    if(todayIsUpdateDay(habit) && completedHabit(habit))
-    {
+    if(todayIsUpdateDay(habit) && completedHabit(habit)){
         showTodaysCompletions(listItem);
         showCompleteButton(listItem,false);
     }
-    else if (todayIsUpdateDay(habit) && !completedHabit(habit)) 
-    {
+    else if (todayIsUpdateDay(habit) && !completedHabit(habit)){
         showTodaysCompletions(listItem);
         showCompleteButton(listItem,false);
-
     }   
-    else 
-    {
+    else{
         showCompleteButton(listItem,true);
     }
     return listItem;
@@ -298,7 +295,7 @@ function onDeletePress(id_param){
                     <button type='button' class='nobtn op-yesbtn op-done' style='color:white;font-size:16px'>No</button></div>";  
 
 
-   // if delete, delete
+    // if delete, delete
     var yb = listElement.getElementsByClassName('yesbtn')[0];
 
     yb.onclick = function () {

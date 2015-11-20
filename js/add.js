@@ -418,7 +418,6 @@ function loadHtmlElements() {
 
         if (isInt(habit.image)){
             onImageClick(document.getElementById('icon' + habit.image));
-            //imageElement.src = "../img/icon" + habit.image +  ".jpg"
         }else{
            var imageElementData = "data:image/png;base64," + habit.image;
            addNewImageChild(imageElementData);
