@@ -127,9 +127,7 @@ function makeHtmlElement(habit){
     var elementTemplate = document.getElementById('template').innerHTML;
     listItem.innerHTML = elementTemplate;
 
-
-    listItem.className = "new-item";
-   //Title
+    //Title
     listItem.getElementsByClassName("habit-name")[0].innerHTML = habit.title;
 
     //Image
@@ -289,28 +287,25 @@ function getHabitElement(clickElement){
 function onDeletePress(id_param){
     //show yes and no
     var listElement = getHabitElement(id_param);
+    listElement.className = "removed-item";
     listElement.getElementsByClassName("replace")[0].innerHTML = "<div class='para' style='color:#888;display:inline'>Are you sure? \
                     <button type='button' class='yesbtn op-yesbtn op-del' style='color:white;font-size:16px'>Yes</button>  \
                     <button type='button' class='nobtn op-yesbtn op-done' style='color:white;font-size:16px'>No</button></div>";  
 
-
    // if delete, delete
     var yb = listElement.getElementsByClassName('yesbtn')[0];
-
     yb.onclick = function () {
-        listElement.className = "removed-item";
-        setTimeout(fun, 1000);
-            function fun() {
-            var listItem = id_param.parentNode.parentNode;
-            var listContainer = listItem.parentNode;
+        var listItem = id_param.parentNode.parentNode;
+        var listContainer = listItem.parentNode;
 
-            var id = listItem.id;
+        var id = listItem.id;
 
-            deleteHabit(id, id_param);
-            listContainer.removeChild(listItem); 
-            if(listContainer.children[(listContainer.children.length)-1].id === "separator")
-                listContainer.removeChild(listContainer.children[(listContainer.children.length)-1]);
-            }
+        deleteHabit(id);
+        listContainer.removeChild(listItem);
+        if( listContainer.children[(listContainer.children.length)-1] !== null &&
+            listContainer.children[(listContainer.children.length)-1].id === "separator" ){
+            listContainer.removeChild(listContainer.children[(listContainer.children.length)-1]);
+        }
     }
 
     // if no delete, put back delete button
@@ -326,8 +321,7 @@ function onDeletePress(id_param){
  *  deleteHabit(habitId)
  *   Deleting the habit instance from our database. Called from onDeletePress 
  */
-function deleteHabit(habitId, id_param){
-    var listElement = getHabitElement(id_param);
+function deleteHabit(habitId){
     var habits = getAllHabits();
     habitId = parseInt(habitId);
     var habit;

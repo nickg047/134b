@@ -116,7 +116,11 @@ function addFromUI() {
     //Check to make sure input is valid
     if (document.getElementById('title').value.length == 0){
         errorNeedToChooseTitle();
-    return;
+        return;
+    }
+    if (document.getElementById('title').value.length > 20){
+        errorNeedToChooseShorterTitle();
+		return;
     } 
     if (image === null){
         errorNeedToPickImage();
@@ -160,11 +164,17 @@ function addFromUI() {
         date: new Date()
     };
     var idFromUrl = location.search.split('id=');
+    //Edit
     if (idFromUrl.length >= 2){
         idFromUrl = idFromUrl[1];
         habit.id = parseInt(idFromUrl);
         var org_habit = getHabitById(habit.id);
-        habit.ticks = org_habit.ticks;
+        if(org_habit.ticks > habit.dailyFreq) {
+            habit.ticks = habit.dailyFreq;
+        }
+        else {
+            habit.ticks = org_habit.ticks;
+        }
         habit.bestRecord = org_habit.bestRecord;
         habit.currentStreak = org_habit.currentStreak;
         habit.date = org_habit.date;
@@ -215,7 +225,7 @@ function getBase64Image() {
     canvas.height = image.height;
 
     var ctx = canvas.getContext("2d");
-    ctx.drawImage(image, 0, 0);
+    ctx.drawImage(image, 0, 0, 80, 80);
 
     var dataURL = canvas.toDataURL("image/png");
 
@@ -360,6 +370,9 @@ function errorNeedProperFrequencyRange(){
 function errorNeedToChooseProperImage(){
     alert("Please choose a proper image to upload. We support JPEG and PNG");
 }
+function errorNeedToChooseShorterTitle(){
+    alert("Please choose a title 20 characters or less");
+}
 
 function getHabitById(habitId){
     var habits = getAllHabits();
@@ -397,7 +410,8 @@ function loadHtmlElements() {
         onImageClick(document.getElementById('icon1'));
     }
     else{
-        //Editing a habit    
+        //Editing a habit
+		document.getElementById("main-header").innerHTML = "Edit A Habit";    
         idFromUrl = idFromUrl[1];
         var habit = getHabitById(parseInt(idFromUrl));
         document.getElementById('title').value = habit.title;
