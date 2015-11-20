@@ -164,11 +164,17 @@ function addFromUI() {
         date: new Date()
     };
     var idFromUrl = location.search.split('id=');
+    //Edit
     if (idFromUrl.length >= 2){
         idFromUrl = idFromUrl[1];
         habit.id = parseInt(idFromUrl);
         var org_habit = getHabitById(habit.id);
-        habit.ticks = org_habit.ticks;
+        if(org_habit.ticks > habit.dailyFreq) {
+            habit.ticks = habit.dailyFreq;
+        }
+        else {
+            habit.ticks = org_habit.ticks;
+        }
         habit.bestRecord = org_habit.bestRecord;
         habit.currentStreak = org_habit.currentStreak;
         habit.date = org_habit.date;

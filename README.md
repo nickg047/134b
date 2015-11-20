@@ -98,6 +98,14 @@ ________________________
 
 Team Member Contributions
 _________________________
+Daniel Kim: 
+-Created database by using localStorage. 
+-Implemented basic backend CRUD pattern. (getAllHabits, addHabit, editHabit, deleteHabit)
+-Implemented Edit.html and Edit.js (merged with Add.html and Add.js)
+-Fixed bugs mostly for Edit
+-Attempted XSS for security
+-Performed basic QA job to find bugs
+
 Jackson: There was a lot of mixing between duties especially as we added more and more features and 
 security checks. I laid the a good portion of the groundwork for the UI for read. I wrote several of
 the security checks for the create (the error message ones). First portion of uploading image.  
