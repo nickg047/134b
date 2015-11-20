@@ -126,15 +126,17 @@ function addFromUI() {
         errorNeedToPickImage();
         return;
     }
-    if (!isInt(document.getElementById('others').value) && document.getElementById('others').value.length > 0){
+    //If otherFrequency is not a positive integer
+    if ( (!isInt(document.getElementById('others').value) || document.getElementById('others').value <= 0) 
+                                                        && document.getElementById('others').value.length > 0 ){
         errorNeedProperFrequencyRange()
-    return;
+        return;
     }
     var dailyCount = getDailyCount();
     var weeklyCount = getCheckedBoxes('date');
     if (dailyCount === null || dailyCount === 0 || sumArray(weeklyCount) == 0){
         errorNeedToChooseFrequency();
-    return;
+        return;
     }
     if(document.getElementById('others').value > 1000){
         errorNeedProperFrequencyRange()
