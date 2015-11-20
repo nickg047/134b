@@ -124,3 +124,10 @@ Nicholas G:
 -Used local storage in concurence with the list data model to determine tasks the user has not completed for the current day  
 -Used javascript timed intervals to trigger hourly push notifications  
 -Used javascript web notifications to create push notifications  
+
+Anna Lebedeva:
+-Transition effects for deletion
+-Transition effects for adding new item; although when a new item is added or edited, all of the habits do the animation. Will be fixed in hw5.
+-Added logout button
+-Confirmation for deletion more user friendly (not just an alert)
+-Basic QA to see how animations work
