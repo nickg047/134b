@@ -86,7 +86,7 @@ ____
 
 Notifications
 _____
-
+Push notifications were created using a javascript interval call and javascript web notifications. If the user has tasks assigned for the current day that have not been completed, the site will send a push notification through the browser every hour alerting the user how many incomplete tasks they have. Oddly though, if the site is run locally (eg file:///) as opposed to being run through server software (eg local server software included in tools like WebStorm) the web notifications will not display in most browsers.
 _____
 
 Extra
@@ -111,3 +111,8 @@ security checks. I laid the a good portion of the groundwork for the UI for read
 the security checks for the create (the error message ones). First portion of uploading image.  
 UI changes for create, code to make it clear what choices your daily frequency is. Method comments, 
 this README. Separating Habits For Today and Other Habits. Bug fixes.
+
+Nicholas G:
+-Used local storage in concurence with the list data model to determine tasks the user has not completed for the current day
+-Used javascript timed intervals to trigger hourly push notifications
+-Used javascript web notifications to create push notifications
