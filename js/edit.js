@@ -1,4 +1,9 @@
-
+/*
+     NOTE
+     As of now edit.html and edit.js are not used in the implementation
+     They were used originally however, functionality was combined into
+     add.html and add.js. Greater details will be provided in the README
+*/ 
 
 var image = null;
 
