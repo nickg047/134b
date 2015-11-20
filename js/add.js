@@ -15,12 +15,15 @@ function onImageClick(imageElement) {
     image.style.border = "5px solid #42A5F5";
 }
 
-
-
 document.getElementById("df1").checked = true;
 document.getElementById("defaultWeeklyFrequency").checked = true;
-//document.getElementById("file-input").onchange = updateImage;
 
+/*
+ *  inputCheck()
+ *   Checks to see if the other input for daily frequency is a valid integer
+ *   if it is uncheck the daily frequencies buttons. Otherwise default to 
+ *   check box 1 being checked
+ */
 function inputCheck(){
     var potentialNumber = document.getElementById('others').value;
     selectCheckBox(-1);
@@ -33,25 +36,25 @@ function inputCheck(){
  *  updateImage(input)
  *   Turn the add image into a new image and save this new image as the
  *   image you have selected
- *
- *   NOTE TEMPORARY AS SRC = LOCAL URL, NEED SOMETHING THAT CAN BE PASSED
- *   INTO LOCAL STORAGE AND USED IN ANOTHER FILE
  */
 function updateImage(input){
     var imgU = URL.createObjectURL(input.files[0]);
-    alert(imgU);
     if(imgU !== "null"){
         addNewImageChild(imgU);
     }
     else{
-		document.getElementById("icon4".src = "../img/add.png");
+        document.getElementById("icon4".src = "../img/add.png");
     }
 }
 
+/*
+ *  addNewImageChild(imageData)
+ *   Add a new image based on the inputted file
+ */
 function addNewImageChild(imageData){
     var imgE = document.createElement('img');
     var iconNum = document.getElementsByClassName("icon").length;
-    imgE.id = ("icon"+4);
+    imgE.id = ("icon"+iconNum);
     imgE.className = "icon";
     imgE.src = imageData;
     imgE.alt = "Uploaded Image";
@@ -59,29 +62,6 @@ function addNewImageChild(imageData){
     
     document.getElementById("icon-list").appendChild(imgE);
     onImageClick(imgE);
-}
-/*  TODO
- *  convertImg()
- *   Takes the inputted file image and returns the base64 image that can be 
- *   stored in local storage and read into by list.html.  Called from 
- *   updateImage(input)
- */
-function convertImg(img){
-    var data, canvas, ctx;
-    //Create the canvas element.
-    canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = img.height;
-    // Get '2d' context and draw the image.
-    ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    // Get canvas data URL
-    try{
-        data = canvas.toDataURL();
-    }catch(e){
-        alert("Error converting inputted image");
-    }
-    return data;
 }
 
 /*
@@ -110,7 +90,7 @@ function addFromUI() {
     //Check to make sure input is valid
     if (document.getElementById('title').value.length == 0){
         errorNeedToChooseTitle();
-		return;
+	return;
     } 
     if (image === null){
         errorNeedToPickImage();
@@ -118,17 +98,17 @@ function addFromUI() {
     }
     if (!isInt(document.getElementById('others').value) && document.getElementById('others').value.length > 0){
         errorNeedProperFrequencyRange()
-		return;
+	return;
     }
     var dailyCount = getDailyCount();
     var weeklyCount = getCheckedBoxes('date');
     if (dailyCount === null || dailyCount === 0 || sumArray(weeklyCount) == 0){
         errorNeedToChooseFrequency();
-		return;
+	return;
     }
     if(document.getElementById('others').value > 1000){
         errorNeedProperFrequencyRange()
-		return;
+	return;
     }
       
     var habits = JSON.parse(localStorage.getItem('Habits'));
@@ -162,6 +142,10 @@ function addFromUI() {
     location.href='list.html'; 
 }
 
+/*
+ *  deleteHabit(habitId)
+ *   Delete the habit by database as given by habitId
+ */
 function deleteHabit(habitId){
     var habits = getAllHabits();
     habitId = parseInt(habitId);
@@ -176,6 +160,10 @@ function deleteHabit(habitId){
     localStorage.setItem("Habits", JSON.stringify(habits));
 }
 
+/*
+ *  getImage()
+ *   Return the image, if its an added one return the base64 version
+ */
 function getImage(){
     var num = image.id.toString().slice(4,5);
     if (parseInt(num) < 4)
@@ -185,6 +173,10 @@ function getImage(){
 
 }
 
+/*
+ *  getBase64Image()
+ *   Take in an image and convert and return the base64 image
+ */
 function getBase64Image() {
     var canvas = document.createElement("canvas");
     canvas.width = image.width;
@@ -228,7 +220,7 @@ function isInt(data){
     if (data != parseInt(data, 10))
         return false;
     data = parseInt(data, 10);
-    if (data < 1){
+    if (typeof(data) !== "number"){
         return false;
     }
     return true;
@@ -275,6 +267,7 @@ function getCheckedBoxes(chkboxName) {
     return checkboxesChecked.length > 0 ? checkboxesChecked : [1,1,1,1,1,1,1];
 }
   
+/* Sum an array */
 function sumArray(arr){
     if(arr == null){return 0;}
     var _i = 0;
@@ -337,12 +330,16 @@ function getHabitById(habitId){
     var habit;
     for (var i = 0; i < habits.length; i++){
         habit = habits[i];
-        if (habitId === habit.id){
+        if (habitId ==- parseInt(habit.id)){
             return habit;
         }
     }
 }
 
+/*
+ *  getAllHabits()
+ *   Return a list of habits
+ */
 function getAllHabits(){
     var habits = JSON.parse(localStorage.getItem("Habits"));
     if (!habits){
@@ -351,12 +348,19 @@ function getAllHabits(){
     }
     return habits;
 }
+
+/*
+ *  Once all scripts are done loading if this was redirected to edit a habit
+ *  then load up the habit's features which you expect to edit
+ */
 location.search.split('id=').length > 1;
 var idFromUrl = location.search.split('id=');
 if (idFromUrl.length < 2){
-    //this is a straight up add
+    //Adding a habit
     onImageClick(document.getElementById('icon1'));
-}else{
+}
+else{
+    //Editing a habit    
     idFromUrl = idFromUrl[1];
     var habit = getHabitById(parseInt(idFromUrl));
     document.getElementById('title').value = habit.title;
