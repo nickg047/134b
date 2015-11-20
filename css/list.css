@@ -1,6 +1,6 @@
 /* basic structure & layout */
-html{height: 100%;}
-h1{color:#888;text-align: center;}
+/*html{height: 100%;}*/
+h1{color:#888;text-align: left; margin-left:20px}
 body{
     height:100%;   
     background: -webkit-linear-gradient(left top, #BBDEFB, #B0C4DE) fixed; /* For Safari 5.1 to 6.0 */
@@ -78,7 +78,7 @@ body{
 .op-del:active{background:#F22613; border:2px solid red;}
 
 /* Log Out */
-#logOut{display:inline; float:right; margin-right: 10px; bottom: 40px; right:20px;background:rgba(0, 0, 0, 0.3); width: 60px;height:60px; vertical-align: middle; font-size:15px; padding: 5px;color:white; border:2px solid rgba(0,0,0,0.3); -webkit-appereance: none; border-radius: 50%; box-shadow: 0 0 3px gray;}
+#logOut{position:fixed; display:inline; float:right; margin-right: 10px; top:5px; right:10px;background:rgba(0, 0, 0, 0.3); width: 60px;height:60px; vertical-align: top; font-size:15px; padding: 5px;color:white; border:2px solid rgba(0,0,0,0.3); -webkit-appereance: none; border-radius: 50%; box-shadow: 0 0 3px gray;}
 #logOut:hover{background: rgba(0, 0, 0, 0.2); border:1px solid rgba(0,0,0,0.5); box-shadow: 0 0 3px gray;}
 #logOut:active{border: 2px solid gray; background: rgba(33, 72, 100); box-shadow: 0 0 10px gray;}
 #logOut:focus{outline-style:none;}
