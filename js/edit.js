@@ -1,3 +1,5 @@
+
+
 var image = null;
 
 /*
@@ -5,14 +7,14 @@ var image = null;
  *   When choosing a icon this will put a blue border around only the selected
  *   icon. It then sets the image for the habit to be this one
  */
-function selectImage(id_param) {
+function selectImage(imageElement) {
 //Clear all the other effects
     var icons = document.getElementsByClassName("icon");
     var i = 0;
     for(i; i<icons.length; i++){
         icons[i].style.border = "none";
     }
-    image = document.getElementById(id_param);
+    image = imageElement;
     image.style.border = "5px solid #42A5F5";
 }
 
@@ -93,6 +95,7 @@ function editFromUI() {
     }
     var dailyCount = getDailyCount();
     var weeklyCount = getCheckedBoxes('date');
+    alert(weeklyCount);
     if (dailyCount === null || dailyCount === 0 || sumArray(weeklyCount) == 0){
         errorNeedToChooseFrequency();
 		return;
@@ -115,7 +118,7 @@ function editFromUI() {
 	var habit = {
 		id: org_habit.id,
         title: document.getElementById('title').value,
-        image: image.src,
+        image: getImage(),
         weekFreq: weeklyCount,
         dailyFreq: dailyCount,
         other: document.getElementById('others').value,
@@ -125,8 +128,19 @@ function editFromUI() {
         date: org_habit.date
     };
     editHabit(habit);
+    return;
     location.href='list.html'; 
 }
+
+function getImage(){
+    var num = image.id.toString().slice(4,5);
+    if (parseInt(num) < 4)
+        return num;
+    else
+        return getBase64Image();
+
+}
+
 /*
 	only works with backend
 	habit: habit to update
@@ -157,11 +171,11 @@ function updateHabitUI(){
             break;
         }
     }
-
 }
 updateHabitUI();
 function makeHtmlElement(habit){
     if(!isAHabit(habit)){return;} //Safeguard
+    return;
     
     var listItem = document.getElementById('forms');
     var elementTemplate = document.getElementById('template').innerHTML;
@@ -171,8 +185,14 @@ function makeHtmlElement(habit){
     //var a = listItem.getElementById('title').value;
     //alert(a);
     document.getElementById('title').value = habit.title;
-
+    
     //Image
+    if (isInt(habit.image)){
+        selectImage(document.getElementById('icon' + habit.image));
+        //imageElement.src = "../img/icon" + habit.image +  ".jpg"
+    }else{
+       imageElement.src = "data:image/png;base64," + habit.image;
+    }
     for(var i = 0; i < document.getElementsByClassName('icon').length; i++) {
         var element = document.getElementsByClassName('icon')[i];
         if(element.src == habit.image) {
@@ -182,10 +202,11 @@ function makeHtmlElement(habit){
     }
 
     //Weekly Frequency
-    for(var i = 0; i < document.getElementsByName('date').length; i++) {
-        var element = document.getElementsByName('date')[i];
+    var dateBoxes = document.getElementsByName('date');
+    for(var i = 0; i < dateBoxes.length; i++) {
+        var dateBox = dateBoxes[i];
         if(habit.weekFreq[i]) {
-            element.checked = true;
+            dateBox.checked = true;
         }
     }
 
@@ -199,12 +220,15 @@ function makeHtmlElement(habit){
 function getCheckedBoxes(chkboxName) {
     var checkboxes = document.getElementsByName(chkboxName);
     var checkboxesChecked = [];
+    alert(chkboxName + checkboxes.length);
     for (var i=0; i<checkboxes.length; i++) {
         if (checkboxes[i].checked) {
-            checkboxesChecked.push(checkboxes[i].value);
+            checkboxesChecked.push(1);
+        }else{
+            checkboxesChecked.push(0);
         }
     }
-    return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+    return checkboxesChecked;
 }
 
 function getAllHabits(){

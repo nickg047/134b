@@ -5,18 +5,16 @@ image = null;
  *   When choosing a icon this will put a blue border around only the selected
  *   icon. It then sets the image for the habit to be this one
  */
-function selectImage(id_param) {
+function onImageClick(imageElement) {
 //Clear all the other effects
     var icons = document.getElementsByClassName("icon");
-    var i = 0;
-    for(i; i<icons.length; i++){
+    for(var i = 0; i<icons.length; i++){
         icons[i].style.border = "none";
     }
-    image = document.getElementById(id_param);
+    image = imageElement;
     image.style.border = "5px solid #42A5F5";
 }
 
-selectImage('icon1');
 
 
 document.getElementById("df1").checked = true;
@@ -40,26 +38,28 @@ function inputCheck(){
  *   INTO LOCAL STORAGE AND USED IN ANOTHER FILE
  */
 function updateImage(input){
-    alert(input.files[0]);
     var imgU = URL.createObjectURL(input.files[0]);
+    alert(imgU);
     if(imgU !== "null"){
-        //Add in the new img element
-		var imgE = document.createElement('img');
-		var iconNum = document.getElementsByClassName("icon").length;
-		imgE.id = ("icon"+iconNum);
-		imgE.className = "icon";
-		imgE.src = imgU;
-		imgE.alt = "Uploaded Image";
-		imgE.onclick = function() { selectImage(("icon"+iconNum)); };
-		
-		document.getElementById("icon-list").appendChild(imgE);
-		selectImage(("icon"+iconNum));
+        addNewImageChild(imgU);
     }
     else{
 		document.getElementById("icon4".src = "../img/add.png");
     }
 }
 
+function addNewImageChild(imageData){
+    var imgE = document.createElement('img');
+    var iconNum = document.getElementsByClassName("icon").length;
+    imgE.id = ("icon"+4);
+    imgE.className = "icon";
+    imgE.src = imageData;
+    imgE.alt = "Uploaded Image";
+    imgE.onclick = function() { onImageClick(this); };
+    
+    document.getElementById("icon-list").appendChild(imgE);
+    onImageClick(imgE);
+}
 /*  TODO
  *  convertImg()
  *   Takes the inputted file image and returns the base64 image that can be 
@@ -143,7 +143,7 @@ function addFromUI() {
     var habit = {
         id: newHabitId,
         title: document.getElementById('title').value,
-        image: getBase64Image(document.getElementById('icon4')),
+        image: getImage(),
         weekFreq: weeklyCount,
         dailyFreq: dailyCount,
         other: document.getElementById('others').value,
@@ -152,17 +152,46 @@ function addFromUI() {
         currentStreak: 0,
         date: new Date()
     };
+    var idFromUrl = location.search.split('id=');
+    if (idFromUrl.length >= 2){
+        idFromUrl = idFromUrl[1];
+        habit.id = idFromUrl;
+        deleteHabit(parseInt(idFromUrl));
+    }
     addHabit(habit);
     location.href='list.html'; 
 }
 
-function getBase64Image(img) {
+function deleteHabit(habitId){
+    var habits = getAllHabits();
+    habitId = parseInt(habitId);
+    var habit;
+    for (var i = 0; i < habits.length; i++){
+        habit = habits[i];
+        if (habitId === habit.id){
+            habits.splice(i, 1);
+            break;
+        }
+    }
+    localStorage.setItem("Habits", JSON.stringify(habits));
+}
+
+function getImage(){
+    var num = image.id.toString().slice(4,5);
+    if (parseInt(num) < 4)
+        return num;
+    else
+        return getBase64Image();
+
+}
+
+function getBase64Image() {
     var canvas = document.createElement("canvas");
-    canvas.width = img.width;
-    canvas.height = img.height;
+    canvas.width = image.width;
+    canvas.height = image.height;
 
     var ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
+    ctx.drawImage(image, 0, 0);
 
     var dataURL = canvas.toDataURL("image/png");
 
@@ -231,6 +260,7 @@ function addHabit(habit) {
  *  getCheckedBoxes(chkboxName)
  *   Goes to the weekly or daily checkboxes and returns an array of 0s and 1s 
  *   if that checkbox was checked.
+ *   if none are checked, assume all days are checked
  */
 function getCheckedBoxes(chkboxName) {
     var checkboxes = document.getElementsByName(chkboxName);
@@ -242,7 +272,7 @@ function getCheckedBoxes(chkboxName) {
             checkboxesChecked.push(0);
         }
     }
-    return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+    return checkboxesChecked.length > 0 ? checkboxesChecked : [1,1,1,1,1,1,1];
 }
   
 function sumArray(arr){
@@ -300,4 +330,51 @@ function errorNeedProperFrequencyRange(){
     document.getElementById("others").placeholder = "Number 1-1000";
     document.getElementById("others").className += " error";
     alert("Please choose a frequency to be a number between\n1 and 1000");    
+}
+
+function getHabitById(habitId){
+    var habits = getAllHabits();
+    var habit;
+    for (var i = 0; i < habits.length; i++){
+        habit = habits[i];
+        if (habitId === habit.id){
+            return habit;
+        }
+    }
+}
+
+function getAllHabits(){
+    var habits = JSON.parse(localStorage.getItem("Habits"));
+    if (!habits){
+        habits = [];
+        localStorage.setItem("Habits", JSON.stringify(habits));
+    }
+    return habits;
+}
+location.search.split('id=').length > 1;
+var idFromUrl = location.search.split('id=');
+if (idFromUrl.length < 2){
+    //this is a straight up add
+    onImageClick(document.getElementById('icon1'));
+}else{
+    idFromUrl = idFromUrl[1];
+    var habit = getHabitById(parseInt(idFromUrl));
+    document.getElementById('title').value = habit.title;
+
+    if (isInt(habit.image)){
+        onImageClick(document.getElementById('icon' + habit.image));
+        //imageElement.src = "../img/icon" + habit.image +  ".jpg"
+    }else{
+       var imageElementData = "data:image/png;base64," + habit.image;
+       addNewImageChild(imageElementData);
+    }
+
+    //Weekly Frequency
+    var dateBoxes = document.getElementsByName('date');
+    for(var i = 0; i < dateBoxes.length; i++) {
+        var dateBox = dateBoxes[i];
+        if(habit.weekFreq[i]) {
+            dateBox.checked = true;
+        }
+    }
 }
