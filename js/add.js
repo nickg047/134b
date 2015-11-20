@@ -119,7 +119,7 @@ function addFromUI() {
         var prevHabit = habits[habits.length-1];
         newHabitId = prevHabit.id + 1;
     }
-
+    alert(newHabitId);
     var habit = {
         id: newHabitId,
         title: document.getElementById('title').value,
@@ -135,7 +135,7 @@ function addFromUI() {
     var idFromUrl = location.search.split('id=');
     if (idFromUrl.length >= 2){
         idFromUrl = idFromUrl[1];
-        habit.id = idFromUrl;
+        habit.id = parseInt(idFromUrl);
         deleteHabit(parseInt(idFromUrl));
     }
     addHabit(habit);
