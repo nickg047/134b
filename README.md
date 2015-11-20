@@ -95,7 +95,7 @@ _____
 
 Extra
 _____
-
+For the CRUD pattern, there were originally 4 methods: getAllHabits(), addHabit(habitObject), editHabit(habitObject), and deleteHabit(habitId). However, editHabit(habitObject) is not replaced by creating a variable of the new habit with the same id, deleting the original habit, and adding the new habit. getAllHabits() just simply gets "Habits" from the localStorage and parse it into JSON data to return array of habits. addHabit(habitObject) creates a variable of habit and adds into the JSON data, which gets stringified and put into the localStorage. deleteHabit(habitId) finds the correct habit with the corresponding habit id and removes it from the JSON data then stringify the JSON data to put it into the localStorage.
 
 
 ________________________
