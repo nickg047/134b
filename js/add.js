@@ -26,10 +26,12 @@ document.getElementById("defaultWeeklyFrequency").checked = true;
  */
 function inputCheck(){
     var potentialNumber = document.getElementById('others').value;
+    
     selectCheckBox(-1);
     if (!isInt(potentialNumber)){
         document.getElementById("df1").checked = true;
     }
+   
 }
 
 /*
@@ -38,6 +40,10 @@ function inputCheck(){
  *   image you have selected
  */
 function updateImage(input){
+    if(!isImageFile(input.files[0].name)){
+        errorNeedToChooseProperImage();
+        return;
+    }
     var imgU = URL.createObjectURL(input.files[0]);
     if(imgU !== "null"){
         addNewImageChild(imgU);
@@ -47,6 +53,23 @@ function updateImage(input){
     }
 }
 
+/*
+ *  isImageFile
+ *   Checks to see if the filename string has a file extension of a
+ *   image that is upload-able. Returns boolean
+ */
+function isImageFile(fileName){
+    if(fileName === null || fileName.indexOf(".") === -1)
+        return false;
+        
+    var ext = fileName.split(".");
+    ext = ext[ext.length-1];
+    if(ext === "jpg" || ext === "png")
+        return true;
+    else
+        return false;
+}
+ 
 /*
  *  addNewImageChild(imageData)
  *   Add a new image based on the inputted file
@@ -79,6 +102,9 @@ function selectCheckBox(dayName){
     if(dayName !== 3){
         document.getElementById("df3").checked = false
     }
+    if(dayName !== -1) {
+        document.getElementById('others').value = "";
+    }
 }
 
 /*
@@ -90,7 +116,7 @@ function addFromUI() {
     //Check to make sure input is valid
     if (document.getElementById('title').value.length == 0){
         errorNeedToChooseTitle();
-	return;
+    return;
     } 
     if (image === null){
         errorNeedToPickImage();
@@ -98,19 +124,21 @@ function addFromUI() {
     }
     if (!isInt(document.getElementById('others').value) && document.getElementById('others').value.length > 0){
         errorNeedProperFrequencyRange()
-	return;
+    return;
     }
     var dailyCount = getDailyCount();
     var weeklyCount = getCheckedBoxes('date');
     if (dailyCount === null || dailyCount === 0 || sumArray(weeklyCount) == 0){
         errorNeedToChooseFrequency();
-	return;
+    return;
     }
     if(document.getElementById('others').value > 1000){
         errorNeedProperFrequencyRange()
-	return;
+    return;
     }
-      
+
+    //End of error checks
+
     var habits = JSON.parse(localStorage.getItem('Habits'));
     var newHabitId;
     if (habits === null || habits.length === 0){
@@ -119,7 +147,6 @@ function addFromUI() {
         var prevHabit = habits[habits.length-1];
         newHabitId = prevHabit.id + 1;
     }
-    //alert(newHabitId);
     var habit = {
         id: newHabitId,
         title: document.getElementById('title').value,
@@ -136,6 +163,11 @@ function addFromUI() {
     if (idFromUrl.length >= 2){
         idFromUrl = idFromUrl[1];
         habit.id = parseInt(idFromUrl);
+        var org_habit = getHabitById(habit.id);
+        habit.ticks = org_habit.ticks;
+        habit.bestRecord = org_habit.bestRecord;
+        habit.currentStreak = org_habit.currentStreak;
+        habit.date = org_habit.date;
         deleteHabit(parseInt(idFromUrl));
     }
     addHabit(habit);
@@ -245,7 +277,7 @@ function addHabit(habit) {
 
     //Save array
     localStorage.setItem("Habits", JSON.stringify(habits));
-    return true;		        			    
+    return true;                                
 }
 
 /*
@@ -295,8 +327,8 @@ function isAHabit(habit){
     for(i = 0; i < k.length; i++){
         if(habitFields[i] !== k[i]){
             alert("ERROR: Attempted to enter an invalid habit into database");
-		    return false;
-		}
+            return false;
+        }
     }
     return true;
 }
@@ -325,12 +357,16 @@ function errorNeedProperFrequencyRange(){
     alert("Please choose a frequency to be a number between\n1 and 1000");    
 }
 
+function errorNeedToChooseProperImage(){
+    alert("Please choose a proper image to upload. We support JPEG and PNG");
+}
+
 function getHabitById(habitId){
     var habits = getAllHabits();
     var habit;
     for (var i = 0; i < habits.length; i++){
         habit = habits[i];
-        if (habitId ==- parseInt(habit.id)){
+        if (habitId === parseInt(habit.id)){
             return habit;
         }
     }
@@ -353,32 +389,53 @@ function getAllHabits(){
  *  Once all scripts are done loading if this was redirected to edit a habit
  *  then load up the habit's features which you expect to edit
  */
-location.search.split('id=').length > 1;
-var idFromUrl = location.search.split('id=');
-if (idFromUrl.length < 2){
-    //Adding a habit
-    onImageClick(document.getElementById('icon1'));
-}
-else{
-    //Editing a habit    
-    idFromUrl = idFromUrl[1];
-    var habit = getHabitById(parseInt(idFromUrl));
-    document.getElementById('title').value = habit.title;
-
-    if (isInt(habit.image)){
-        onImageClick(document.getElementById('icon' + habit.image));
-        //imageElement.src = "../img/icon" + habit.image +  ".jpg"
-    }else{
-       var imageElementData = "data:image/png;base64," + habit.image;
-       addNewImageChild(imageElementData);
+function loadHtmlElements() {
+    location.search.split('id=').length > 1;
+    var idFromUrl = location.search.split('id=');
+    if (idFromUrl.length < 2){
+        //Adding a habit
+        onImageClick(document.getElementById('icon1'));
     }
+    else{
+        //Editing a habit    
+        idFromUrl = idFromUrl[1];
+        var habit = getHabitById(parseInt(idFromUrl));
+        document.getElementById('title').value = habit.title;
 
-    //Weekly Frequency
-    var dateBoxes = document.getElementsByName('date');
-    for(var i = 0; i < dateBoxes.length; i++) {
-        var dateBox = dateBoxes[i];
-        if(habit.weekFreq[i]) {
-            dateBox.checked = true;
+        if (isInt(habit.image)){
+            onImageClick(document.getElementById('icon' + habit.image));
+            //imageElement.src = "../img/icon" + habit.image +  ".jpg"
+        }else{
+           var imageElementData = "data:image/png;base64," + habit.image;
+           addNewImageChild(imageElementData);
+        }
+
+        //Weekly Frequency
+        var dateBoxes = document.getElementsByName('date');
+        for(var i = 0; i < dateBoxes.length; i++) {
+            var dateBox = dateBoxes[i];
+            if(habit.weekFreq[i]) {
+                dateBox.checked = true;
+            }
+        }
+
+        //Daily Frequency   
+
+        try {
+            document.getElementsByName('day')[habit.dailyFreq-1].checked = true;
+        }
+        //Others
+        catch(e) {
+            document.getElementById('others').value = habit.other;
         }
     }
 }
+function adjustFreqOnLoad() {
+    var idFromUrl = location.search.split('id=');
+    //Edit
+    if(idFromUrl.length >= 2) {
+        selectCheckBox(-1);
+    }    
+}
+adjustFreqOnLoad();
+loadHtmlElements();
