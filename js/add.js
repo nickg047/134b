@@ -26,10 +26,12 @@ document.getElementById("defaultWeeklyFrequency").checked = true;
  */
 function inputCheck(){
     var potentialNumber = document.getElementById('others').value;
+    
     selectCheckBox(-1);
     if (!isInt(potentialNumber)){
         document.getElementById("df1").checked = true;
     }
+   
 }
 
 /*
@@ -110,7 +112,9 @@ function addFromUI() {
         errorNeedProperFrequencyRange()
 	return;
     }
-      
+
+    //End of error checks
+
     var habits = JSON.parse(localStorage.getItem('Habits'));
     var newHabitId;
     if (habits === null || habits.length === 0){
@@ -119,7 +123,6 @@ function addFromUI() {
         var prevHabit = habits[habits.length-1];
         newHabitId = prevHabit.id + 1;
     }
-    alert(newHabitId);
     var habit = {
         id: newHabitId,
         title: document.getElementById('title').value,
@@ -136,6 +139,11 @@ function addFromUI() {
     if (idFromUrl.length >= 2){
         idFromUrl = idFromUrl[1];
         habit.id = parseInt(idFromUrl);
+        var org_habit = getHabitById(habit.id);
+        habit.ticks = org_habit.ticks;
+        habit.bestRecord = org_habit.bestRecord;
+        habit.currentStreak = org_habit.currentStreak;
+        habit.date = org_habit.date;
         deleteHabit(parseInt(idFromUrl));
     }
     addHabit(habit);
@@ -330,7 +338,7 @@ function getHabitById(habitId){
     var habit;
     for (var i = 0; i < habits.length; i++){
         habit = habits[i];
-        if (habitId ==- parseInt(habit.id)){
+        if (habitId === parseInt(habit.id)){
             return habit;
         }
     }
@@ -353,32 +361,53 @@ function getAllHabits(){
  *  Once all scripts are done loading if this was redirected to edit a habit
  *  then load up the habit's features which you expect to edit
  */
-location.search.split('id=').length > 1;
-var idFromUrl = location.search.split('id=');
-if (idFromUrl.length < 2){
-    //Adding a habit
-    onImageClick(document.getElementById('icon1'));
-}
-else{
-    //Editing a habit    
-    idFromUrl = idFromUrl[1];
-    var habit = getHabitById(parseInt(idFromUrl));
-    document.getElementById('title').value = habit.title;
-
-    if (isInt(habit.image)){
-        onImageClick(document.getElementById('icon' + habit.image));
-        //imageElement.src = "../img/icon" + habit.image +  ".jpg"
-    }else{
-       var imageElementData = "data:image/png;base64," + habit.image;
-       addNewImageChild(imageElementData);
+function loadHtmlElements() {
+    location.search.split('id=').length > 1;
+    var idFromUrl = location.search.split('id=');
+    if (idFromUrl.length < 2){
+        //Adding a habit
+        onImageClick(document.getElementById('icon1'));
     }
+    else{
+        //Editing a habit    
+        idFromUrl = idFromUrl[1];
+        var habit = getHabitById(parseInt(idFromUrl));
+        document.getElementById('title').value = habit.title;
 
-    //Weekly Frequency
-    var dateBoxes = document.getElementsByName('date');
-    for(var i = 0; i < dateBoxes.length; i++) {
-        var dateBox = dateBoxes[i];
-        if(habit.weekFreq[i]) {
-            dateBox.checked = true;
+        if (isInt(habit.image)){
+            onImageClick(document.getElementById('icon' + habit.image));
+            //imageElement.src = "../img/icon" + habit.image +  ".jpg"
+        }else{
+           var imageElementData = "data:image/png;base64," + habit.image;
+           addNewImageChild(imageElementData);
+        }
+
+        //Weekly Frequency
+        var dateBoxes = document.getElementsByName('date');
+        for(var i = 0; i < dateBoxes.length; i++) {
+            var dateBox = dateBoxes[i];
+            if(habit.weekFreq[i]) {
+                dateBox.checked = true;
+            }
+        }
+
+        //Daily Frequency   
+
+        try {
+            document.getElementsByName('day')[habit.dailyFreq-1].checked = true;
+        }
+        //Others
+        catch(e) {
+            document.getElementById('others').value = habit.other;
         }
     }
 }
+function adjustFreqOnLoad() {
+    var idFromUrl = location.search.split('id=');
+    //Edit
+    if(idFromUrl.length >= 2) {
+        selectCheckBox(-1);
+    }    
+}
+adjustFreqOnLoad();
+loadHtmlElements();
