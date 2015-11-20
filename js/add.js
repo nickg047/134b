@@ -119,7 +119,7 @@ function addFromUI() {
         var prevHabit = habits[habits.length-1];
         newHabitId = prevHabit.id + 1;
     }
-    alert(newHabitId);
+    //alert(newHabitId);
     var habit = {
         id: newHabitId,
         title: document.getElementById('title').value,
