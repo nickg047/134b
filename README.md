@@ -8,7 +8,8 @@ CSS Files: welcome, login, forms, default, list
 
 Start with opening up welcome.html  
 For this prototype our pseudo-database is localStorage, which stores you're 
-PARSE identification and habits.
+PARSE identification and habits. The habits is a list of habit objects turned
+into a string.
 _______________________________________________________________________________
 ________________________________________________________________________________
 
@@ -25,11 +26,12 @@ Adding habits has you select the title, icon, weekly frequency, and daily freque
 We have checks implemented to make sure the habit you have created are valid.  
 This involves:
   -If no title then prompt the user to enter a valid title via Javascript alert and 
-    changing the placeholder text to red
+    changing the placeholder text to red. Title also has a 20 character limit, this will cover
+    most cases where the text will overflow the bounds of the habit UI.
   -If no icon then prompt the user via Javascript alert (default is the 1st icon). If 
     the user uploads an improper file for the icon they are alerted.
   -If no weekly frequency buttons are selected prompt the user to choose some via
-    Javascript alert
+    Javascript alert.
   -If no daily frequency buttons or text are inputted prompt the user via Javascript
     alert. Will attempt to default to 1. If you have inputted a number in the other 
     portion it will uncheck the buttons for clarity. If you have an invalid number in
@@ -38,12 +40,13 @@ This involves:
     into the database it must have all and only the correct fields of a habit. This check
     is also used as a safeguard when adding any habits anywhere else.
 We have tried to keep the creation of a habit simple and quick since this is a relatively 
-interaction heavy part of the app.  The user can also choose to upload their own icon, through
-the 4th add icon.  It loads up a file and displays all the icons you have selected for this 
-session of create. Once you save it will save the Base64 version of the file to localStorage.
-As of now we the storage of the Base64 image works as the string is saved into the habits 
-image.src field. In the final implementation we plan to correct this by either solving this 
-bug or transitioning to firebase and direct downloading the user inputted image.
+interaction heavy part of the app.  
+
+The user can also choose to upload their own icon, through the 4th add icon.  It loads up a 
+file and displays all the icons you have selected for this session of create. Once you save
+the habit it will save the Base64 version of the file to localStorage. As of now the storage 
+of the Base64 image is a string which is converted back to an image to be displayed, this string
+is stored within the habit object string in the database.
 
 _______
 
@@ -70,9 +73,9 @@ ________
 The template-starter file provided us with add.html and edit.html. We found the two to be largely similar
 so in the interest not duplicating code we combined them into add.html. As stated above edit will redirect 
 you to the creation page, autofilling in as much of the previous data already. It has the same safeguards 
-of a normal create. It will update the database and return back to read. We decided to implement edit as a
-reset of the ticks. We came to this conclusion since retaining a streak after editing the parameters seemed 
-illogical.
+of a normal create. It will update the database and return back to read. If you are editing your ticks then
+your ticks for today cannot excede the new tick limit (they will be truncated after saving). Also your 
+current streak and best record are preserved after updating.
 ________
 
 Deleting
@@ -81,6 +84,7 @@ Deleting was a simple two step process for us. A habit can be deleted in the lis
 after confirmation of the delete. It then removes the habit from the database and then from the UI. The 
 remaining habits are then re-aligned and if necessary the heading for "Other Habits" disappears if there are
 none.
+
 
 ____
 
@@ -99,20 +103,24 @@ ________________________
 Team Member Contributions
 _________________________
 Daniel Kim: 
--Created database by using localStorage. 
--Implemented basic backend CRUD pattern. (getAllHabits, addHabit, editHabit, deleteHabit)
--Implemented Edit.html and Edit.js (merged with Add.html and Add.js)
--Fixed bugs mostly for Edit
--Attempted XSS for security
--Performed basic QA job to find bugs
+-Created database by using localStorage.  
+-Implemented basic backend CRUD pattern. (getAllHabits, addHabit, editHabit, deleteHabit)  
+-Implemented Edit.html and Edit.js (merged with Add.html and Add.js)  
+-Fixed bugs mostly for Edit  
+-Attempted XSS for security  
+-Performed basic QA job to find bugs  
 
-Jackson: There was a lot of mixing between duties especially as we added more and more features and 
-security checks. I laid the a good portion of the groundwork for the UI for read. I wrote several of
-the security checks for the create (the error message ones). First portion of uploading image.  
-UI changes for create, code to make it clear what choices your daily frequency is. Method comments, 
-this README. Separating Habits For Today and Other Habits. Bug fixes.
+Jackson Davenport:   
+-Laid the a good portion of the groundwork for the UI for read.  
+-Wrote several of the security checks for the create (the error message ones).   
+-Backbone of image file upload and resizing (not conversion)  
+-UI modifications changes for create, code to make it clear what choice your daily frequency is.   
+-Method comments, this README.   
+-Dynamic headers for read/edit.  
+-Bug fixes.  
+-Side note: for some reason my commits on git are listed separately under 'Jackson Davenport' and 'Jack'  
 
 Nicholas G:
--Used local storage in concurence with the list data model to determine tasks the user has not completed for the current day
--Used javascript timed intervals to trigger hourly push notifications
--Used javascript web notifications to create push notifications
+-Used local storage in concurence with the list data model to determine tasks the user has not completed for the current day  
+-Used javascript timed intervals to trigger hourly push notifications  
+-Used javascript web notifications to create push notifications  
