@@ -301,9 +301,11 @@ function onDeletePress(id_param){
         var id = listItem.id;
 
         deleteHabit(id);
-        listContainer.removeChild(listItem); 
-        if(listContainer.children[(listContainer.children.length)-1].id === "separator")
+        listContainer.removeChild(listItem);
+		if( listContainer.children[(listContainer.children.length)-1] !== null &&
+		    listContainer.children[(listContainer.children.length)-1].id === "separator" ){
             listContainer.removeChild(listContainer.children[(listContainer.children.length)-1]);
+		}
     }
 
     // if no delete, put back delete button
