@@ -21,12 +21,15 @@ body{
               opacity: 0;
               -webkit-animation: new-item-animation .5s linear forwards;
               -o-animation: new-item-animation .5s linear forwards;
+              -moz-animation: new-item-animation .5s linear forwards;
               animation: new-item-animation .5s linear forwards
             }
 .removed-item {
+  -moz-animation: removed-item-animation 1s cubic-bezier(0.55, -0.04, 0.91, 0.94) forwards;
   -webkit-animation: removed-item-animation 1s cubic-bezier(0.55, -0.04, 0.91, 0.94) forwards;
   -o-animation: removed-item-animation 1s cubic-bezier(0.55, -0.04, 0.91, 0.94) forwards;
   animation: removed-item-animation 1s cubic-bezier(0.55, -0.04, 0.91, 0.94) forwards;
+  -moz-animation: 0% 100%;
   -webkit-transform-origin: 0% 100%;
   -ms-transform-origin: 0% 100%;
   -o-transform-origin: 0% 100%;
@@ -102,6 +105,7 @@ body{
 }
 
 @keyframes fadeIn{to{opacity: 1;}}
+
 @keyframes openspace {
   to {
     height: auto
@@ -110,6 +114,19 @@ body{
 
 
 @-webkit-keyframes new-item-animation {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-400px);
+    transform: translateX(-400px)
+  }
+
+  to {
+    opacity: 1;
+    transform : translateX(0)
+  }
+}
+
+@-moz-keyframes new-item-animation {
   from {
     opacity: 0;
     -webkit-transform: translateX(-400px);
@@ -141,6 +158,12 @@ body{
   }
 }
 
+@-moz-keyframes openspace {
+  to {
+    height: auto
+  }
+}
+
 @-o-keyframes openspace {
   to {
     height: auto
@@ -166,6 +189,20 @@ body{
 }
 
 @-webkit-keyframes removed-item-animation {
+  0% {
+    opacity: 1;
+    -webkit-transform: rotateZ(0);
+    transform: rotateZ(0)
+  }
+
+  100% {
+    opacity: 0;
+    -webkit-transform: translateY(600px) rotateZ(90deg);
+    transform: translateY(600px) rotateZ(90deg)
+  }
+}
+
+@-moz-keyframes removed-item-animation {
   0% {
     opacity: 1;
     -webkit-transform: rotateZ(0);

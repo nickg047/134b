@@ -167,8 +167,8 @@ var notifications = {
             if(notifications.todayIsUpdateDay(currentHabit)){
                 if(!notifications.completedHabit(currentHabit)){
                     result++;
-			    currentHabit.currentStreak = 0;
-			    updateHabit(currentHabit);
+			    //currentHabit.currentStreak = 0;
+			    //updateHabit(currentHabit);
                 }
             }
         }
