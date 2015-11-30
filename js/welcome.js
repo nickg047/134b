@@ -2,11 +2,16 @@ Parse.initialize("lSrD6K2YbBIZKM7H8VMS43nY1ekjsEohi1RNY7Iu", "c3iXu7MDpI5guDqlEg
 
 if (!loggedIn()){
 	document.querySelector('.addbutton').value = 'login';
+	document.getElementById('add').outerHTML = '';
 }
 
-function onClick(){
+function onClick(i){
 	if (loggedIn()){
-		location.href='add.html'
+		if (i === 1){
+			location.href='list.html'
+		}else{
+			location.href='add.html'
+		}
 	}else{
 		location.href='login.html'
 	}

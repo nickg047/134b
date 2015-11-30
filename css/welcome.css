@@ -86,10 +86,11 @@ i  {
 	background-color: #BBDEFB;
 	
 }
-p#add{
+p{
 	text-align:center;
 	
 }
+
 .welcome .addbutton {
  -webkit-appearance:none;
 	width: 49%;
