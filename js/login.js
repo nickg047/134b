@@ -55,6 +55,6 @@ function onSignupSuccess(){
 	signUpText.style.display = 'block';
 }
 
-function onSignupFailure(user, error){    alert("Error: " + error.code + " " + error.message);
-
+function onSignupFailure(user, error){
+	alert("Error: " + error.code + " " + error.message);
 }
