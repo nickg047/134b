@@ -192,6 +192,10 @@ function save(habit){
     var dailyFreq = getDailyCount();
     habit.set('dailyFreq', dailyFreq);
     
+    if(!habit.get('firstFlurry')){
+        habit.set('firstFlurry', true);//anyas transition effect, only should happen once
+    }
+
     //ticks
     if(habit.get('ticks') > dailyFreq){
         habit.set('ticks', dailyFreq);
@@ -214,7 +218,7 @@ function save(habit){
     }
 
     if(!habit.get('date')){
-        habit.set('date', 0);
+        habit.set('date', new Date().toString());
     }else{
         //don't need to do anything, its an edit
     }

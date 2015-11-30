@@ -163,8 +163,11 @@ function makeHtmlElement(habit){
     var elementTemplate = document.getElementById('template').innerHTML;
     listItem.innerHTML = elementTemplate;
 
-
-    listItem.className = "new-item";
+    if(habit.get('firstFlurry')){//anyas transition effect
+        listItem.className = "new-item";
+        habit.set('firstFlurry', false);
+        habit.save()
+    }
    //Title
     listItem.getElementsByClassName("habit-name")[0].innerHTML = habit.get('title');
 
