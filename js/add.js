@@ -176,10 +176,12 @@ function parseSave(habit){
     habit.save(null, {
         success: function(habit){
             habit = save(habit);
+            mixpanel.track('save habit');
             location.href='list.html'; 
         },
         error: function(object, error){
             alert(error.message);
+            mixpanel.track('error in parse save');
         }
     });
 }

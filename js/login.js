@@ -5,17 +5,22 @@ if (Parse.User.current()){
 }
 
 function onClickSignUp() {
-	var user = new Parse.User();
 	var screenname = getUser();
+	if (screenname.length == 0){
+		return;
+	}
+	var user = new Parse.User();
 	user.set("username", screenname);
 	user.set("password", getPassword());
 	user.set("email", screenname);
 	user.signUp(null, {
 		success: function(user) {
 			onSignupSuccess();
+			mixpanel.track("signup success");
 		},
 		error: function(user, error) {
 			onSignupFailure(user, error);
+			mixpanel.track("signup failure " + error.message);
 		}
 	} );
   
@@ -35,9 +40,11 @@ function onClickLogin(){
         var userSessionId = Parse.User.current().getSessionToken();
         Parse.User.become(userSessionId);
         onSignInSucess();
+        mixpanel.track("login success");
       },
       error: function(user, error) {
         failedSignup(user, error);
+        mixpanel.track("login failure " + error.message);
       }
     });
 }

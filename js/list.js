@@ -299,7 +299,7 @@ function setMeter(listItem, habit){
 function completeHabit(id_param){
     var listElement = getHabitElement(id_param);
     var habitC = getHabitById(listElement.id);
-
+    mixpanel.track('complete my habit');
     if(habitC.get('ticks') < habitC.get('dailyFreq')){//If already there do nothing
         habitC.set('ticks', habitC.get('ticks') + 1);
         if(completedHabit(habitC) && todayIsUpdateDay(habitC)){
@@ -332,6 +332,7 @@ function getHabitElement(clickElement){
 function onDeletePress(id_param){
     //show yes and no
     var listElement = getHabitElement(id_param);
+    mixpanel.track('try to delete habit');
     listElement.getElementsByClassName("replace")[0].innerHTML = "<div class='para' style='color:#888;display:inline'>Are you sure? <button type='button' class='yesbtn op-yesbtn op-del' style='color:white;font-size:16px'>Yes</button><button type='button' class='nobtn op-yesbtn op-done' style='color:white;font-size:16px'>No</button></div>";  
 
 

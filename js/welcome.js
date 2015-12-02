@@ -8,12 +8,15 @@ if (!loggedIn()){
 function onClick(i){
 	if (loggedIn()){
 		if (i === 1){
+			mixpanel.track('view habits')''
 			location.href='list.html'
 		}else{
 			location.href='add.html'
+			mixpanel.track('add habit');
 		}
 	}else{
 		location.href='login.html'
+		mixpanel.track('login');
 	}
 }
 
