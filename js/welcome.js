@@ -8,8 +8,8 @@ if (!loggedIn()){
 function onClick(i){
 	if (loggedIn()){
 		if (i === 1){
-			mixpanel.track('view habits')''
-			location.href='list.html'
+			mixpanel.track('view habits');
+			location.href='list.html';
 		}else{
 			location.href='add.html'
 			mixpanel.track('add habit');
