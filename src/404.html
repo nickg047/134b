@@ -6,7 +6,17 @@
     <title>Page Not Found - 404 Error</title>
     <link rel="stylesheet" href="../css/notfound.css">
     <script type="text/javascript" src="../js/parse.js"></script>
-    <script src="../js/welcome.js"></script>
+    <script>
+        Parse.initialize("lSrD6K2YbBIZKM7H8VMS43nY1ekjsEohi1RNY7Iu", "c3iXu7MDpI5guDqlEgr93lan7z0BoajBWSjGOU2j");
+
+        function onClick(){
+            if(Parse.User.current()){
+                location.href = 'list.html';
+            } else {
+                location.href = 'login.html';
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="notfound">
@@ -14,7 +24,7 @@
 
         <h1>Page not found!</h1>
 
-        <p id="view"><input class="addbutton" type="button" value="Go Back" onclick="onClick(1);">
+        <p id="view"><input class="addbutton" type="button" value="Go Back" onclick="onClick();">
         </p>
     </div>
 </body>
