@@ -9,7 +9,20 @@ mixpanel.init("3d254003172f31bfddef05fa9fa768fb");</script><!-- end Mixpanel -->
 		<title>Welcome to Virtue/Vice!</title>
 		<link rel="stylesheet" href="../css/login.css">
 		<link rel="icon" type="image/ico" href="../img/favicon.ico">
-    <script type="text/javascript" src="../js/parse.js"></script>
+    	<script type="text/javascript" src="../js/parse.js"></script>
+		<!-- Raygun (Error Monitoring) -->
+		<script type="text/javascript">
+			!function(a,b,c,d,e,f,g,h){a.RaygunObject=e,a[e]=a[e]||function(){
+						(a[e].o=a[e].o||[]).push(arguments)},f=b.createElement(c),g=b.getElementsByTagName(c)[0],
+					f.async=1,f.src=d,g.parentNode.insertBefore(f,g),h=a.onerror,a.onerror=function(b,c,d,f,g){
+				h&&h(b,c,d,f,g),g||(g=new Error(b)),a[e].q=a[e].q||[],a[e].q.push({
+					e:g})}}(window,document,"script","//cdn.raygun.io/raygun4js/raygun.min.js","rg4js");
+		</script>
+		<script type="text/javascript">
+			rg4js('apiKey', 'HS6tW1E+BoURo4FaIUdI6g==');
+			rg4js('attach', true);
+		</script>
+		<!-- /Raygun -->
 	</head>
 	<body>
 
