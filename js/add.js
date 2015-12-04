@@ -466,7 +466,10 @@ function adjustFreqOnLoad() {
     //Edit
     if(idFromUrl.length >= 2) {
         selectCheckBox(-1);
-    }    
+    }else{
+    document.getElementById("df1").checked = true;
+    document.getElementById("defaultWeeklyFrequency").checked = true;
+    }
 }
 adjustFreqOnLoad();
 var idFromUrl = location.search.split('id=');
@@ -488,6 +491,3 @@ else{
         }
     });
 }
-
-document.getElementById("df1").checked = true;
-document.getElementById("defaultWeeklyFrequency").checked = true;

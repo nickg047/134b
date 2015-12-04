@@ -199,7 +199,7 @@ function makeHtmlElement(habit){
 
     if(todayIsUpdateDay(habit) && completedHabit(habit)){
         showTodaysCompletions(listItem);
-        showCompleteButton(listItem,false);
+        showCompleteButton(listItem,true);
     }
     else if (todayIsUpdateDay(habit) && !completedHabit(habit)){
         showTodaysCompletions(listItem);
@@ -301,13 +301,14 @@ function completeHabit(id_param){
     var habitC = getHabitById(listElement.id);
     mixpanel.track('complete my habit');
     if(habitC.get('ticks') < habitC.get('dailyFreq')){//If already there do nothing
-        habitC.set('ticks', habitC.get('ticks') + 1);
+        habitC.increment('ticks');
         if(completedHabit(habitC) && todayIsUpdateDay(habitC)){
-            habitC.set('currentStreak', 1 + habitC.currentStreak);
+            habitC.increment('currentStreak');
         }
         if(habitC.get('currentStreak') > habitC.get('bestRecord')){
-            habitC.set('bestRecord', habitC.currentStreak);
+            habitC.set('bestRecord', habitC.get('currentStreak'));
         }
+        showCompleteButton(listElement, true);
     }
    updateHabit(habitC);
    setCompletionText(listElement, habitC);
