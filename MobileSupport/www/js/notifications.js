@@ -1,4 +1,7 @@
+Parse.initialize("lSrD6K2YbBIZKM7H8VMS43nY1ekjsEohi1RNY7Iu", "c3iXu7MDpI5guDqlEgr93lan7z0BoajBWSjGOU2j");
+
 var notifications = {
+	habitsList: null, // store the found habits
     numHabits: 0, // number of today's incomplete habits, set by updateTodaysHabits()
 	displayPageLoadNotifications: true, // sets whether to display notifications on page load
     // timer object holds all the variables and functions that control the timer
@@ -112,63 +115,49 @@ var notifications = {
     // from list.js
     // used to get all habits from the local storage
     getAllHabits: function(){
-        var habits = JSON.parse(localStorage.getItem("Habits"));
-        if (!habits){
-            habits = [];
-            localStorage.setItem("Habits", JSON.stringify(habits));
-        }
-        return habits;
+		var Habit = Parse.Object.extend("Habit");
+		var query = new Parse.Query(Habit);
+		var habits;
+		query.equalTo('owner', Parse.User.current().id);
+		query.find({
+			success: function(h){
+				habits = h;
+			}, error: function(error){
+				habits = null;
+			}
+		});
+		return habits;
     },
 
- 
-    //updateHabit(habitToUpdate) from list.js
-    //Takes in a habit as a parameter and swaps it into the habit object list 
-    //and re-writes this into the database.
-    updateHabit: function(habitToUpdate){
-        var habits = getAllHabits();
-        var habit;
-        for (var i = 0; i < habits.length; i++){
-            habit = habits[i];
-            if (habitToUpdate.id === habit.id){
-                habits[i] = habitToUpdate;
-                localStorage.setItem("Habits", JSON.stringify(habits));
-                return;
-            }
-        }
-    },
-    
     // from list.js
     // used to filter out habits that do/do not occur today
     todayIsUpdateDay: function(habit){
-        var date = new Date();
-        var day = date.getDay();
-        date = null;
-        //if you didn't select today as a day that you shouldn't update your habits
-        if (habit.weekFreq[day] === 0){
-            return false;
-        }
-        return true;
+		var date = new Date();
+		var day = date.getDay();
+		date = null;
+		//if you didn't select today as a day that you shouldn't update your habits
+		if (habit.get('weekFreq')[day] === 0){
+			return false;
+		}
+		return true;
     },
 
     // from list.js
     // used to check if a given habit has been completed
     completedHabit: function(habit){
-        return habit.ticks == habit.dailyFreq;
+		return habit.get('ticks') == habit.get('dailyFreq');
     },
 
     // sets numHabits to the number of habits that are currently incomplete for today
     // if a habit has not reached its goal frequency reset its currentStreak
     updateTodaysHabits: function(){
-        var habitsList = notifications.getAllHabits();
         var counter = 0;
         var result = 0;
-        for(counter = 0; counter < habitsList.length; counter++){
-            var currentHabit = habitsList[counter];
+        for(counter = 0; counter < notifications.habitsList.length; counter++){
+            var currentHabit = notifications.habitsList[counter];
             if(notifications.todayIsUpdateDay(currentHabit)){
                 if(!notifications.completedHabit(currentHabit)){
                     result++;
-			    //currentHabit.currentStreak = 0;
-			    //updateHabit(currentHabit);
                 }
             }
         }
@@ -181,10 +170,19 @@ var notifications = {
     // Also, no notifications are displayed if numHabits is 0.
     startNotification: function() {
         notifications.timer.intervalTimer = setInterval(function () {
-            notifications.updateTodaysHabits();
-            if (notifications.numHabits != 0) {
-                notifications.pushNotify("You have ".concat(notifications.numHabits.toString()).concat(" incomplete tasks"));
-            }
+			var Habit = Parse.Object.extend("Habit");
+			var query = new Parse.Query(Habit);
+			query.equalTo('owner', Parse.User.current().id);
+			query.find({
+				success: function(h) {
+					notifications.habitsList = h;
+					notifications.updateTodaysHabits();
+					if (notifications.numHabits != 0) {
+						notifications.pushNotify("You have ".concat(notifications.numHabits.toString()).concat(" incomplete tasks"));
+					}
+				}
+			});
+
         }, notifications.timer.getCurrentTimerRaw());
     },
 
@@ -196,22 +194,23 @@ var notifications = {
 	// call this function to display notifications on page load
 	pageLoadNotifications: function(){
 		if(notifications.displayPageLoadNotifications){
-			notifications.updateTodaysHabits();
-        	if (notifications.numHabits != 0) {
-        		notifications.pushNotify("You have ".concat(notifications.numHabits.toString()).concat(" incomplete tasks"));
-        	}
+			var Habit = Parse.Object.extend("Habit");
+			var query = new Parse.Query(Habit);
+			query.equalTo('owner', Parse.User.current().id);
+			query.find({
+				success: function(h) {
+					notifications.habitsList = h;
+					notifications.updateTodaysHabits();
+					if (notifications.numHabits != 0) {
+						notifications.pushNotify("You have ".concat(notifications.numHabits.toString()).concat(" incomplete tasks"));
+					}
+				}
+			});
 		}
 	}
 };
-
 /******************************************************************************************************
  * This Section sets up and launches the notification system for any page that includes this .js file *
  ******************************************************************************************************/
-
-// set the notification interval and starts the timer
 notifications.timer.setTimerInHours(1);
-
-// display notification on page load
-// set notifications.displayPageLoadNotifications to false to disable
-// notifications.displayPageLoadNotifications = false;
 notifications.pageLoadNotifications();
