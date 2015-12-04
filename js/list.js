@@ -303,12 +303,29 @@ function completeHabit(id_param){
     if(habitC.get('ticks') < habitC.get('dailyFreq')){//If already there do nothing
         habitC.increment('ticks');
         if(completedHabit(habitC) && todayIsUpdateDay(habitC)){
-            habitC.increment('currentStreak');
+            var lastDate = new Date(habitC.get('date'));
+            lastDate.setMilliseconds(0);
+            lastDate.setSeconds(0);
+            lastDate.setMinutes(0);
+            lastDate.setHours(0);
+            var today = new Date();
+            today.setMilliseconds(0);
+            today.setSeconds(0);
+            today.setMinutes(0);
+            today.setHours(0);
+            if (lastDate < today){
+                habitC.increment('currentStreak');
+                habitC.set('date', today.toSring());
+            }
+            else{
+                habitC.set('currentStreak', 0);
+                habitC.set('date', today.toSring());
+            }
         }
         if(habitC.get('currentStreak') > habitC.get('bestRecord')){
             habitC.set('bestRecord', habitC.get('currentStreak'));
         }
-        showCompleteButton(listElement, true);
+        //showCompleteButton(listElement, true);
     }
    updateHabit(habitC);
    setCompletionText(listElement, habitC);
