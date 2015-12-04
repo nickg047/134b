@@ -1,8 +1,17 @@
+Parse.initialize("lSrD6K2YbBIZKM7H8VMS43nY1ekjsEohi1RNY7Iu", "c3iXu7MDpI5guDqlEgr93lan7z0BoajBWSjGOU2j");
+
+//redirects user to login page if they managed to get here
+if(!Parse.User.current()){
+    location.href='login.html';
+}
+
 /*
  * getAllHabits()
  *  Return a list of all the habits taken from the database
  */
-function getAllHabits(){
+
+ //old way to get habits
+function getAllHabits1(){
     var habits = JSON.parse(localStorage.getItem("Habits"));
     if (!habits){
         habits = [];
@@ -16,6 +25,14 @@ function getAllHabits(){
  *   Return the habit object given its id
  */
 function getHabitById(habitId){
+    for (var i = 0; i < habits.length; i++){
+        if (habits[i].id === habitId){
+            return habits[i];
+        }
+    }
+}
+
+function getHabitById1(habitId){
     var habits = getAllHabits();
     var habit;
     for (var i = 0; i < habits.length; i++){
@@ -32,7 +49,14 @@ function getHabitById(habitId){
  *   and re-writes this into the database.
  */
 function updateHabit(habitToUpdate){
-    var habits = getAllHabits();
+    habitToUpdate.save(null, {
+        success: function(habit){
+
+        }, error: function(o, error){
+            alert(error.message);
+        }
+    })
+    /*var habits = getAllHabits();
     var habit;
     for (var i = 0; i < habits.length; i++){
         habit = habits[i];
@@ -41,7 +65,7 @@ function updateHabit(habitToUpdate){
             localStorage.setItem("Habits", JSON.stringify(habits));
             return;
         }
-    }
+    }*/
 }
 
 /*
@@ -50,28 +74,27 @@ function updateHabit(habitToUpdate){
  *   method call and append it to the list. Seperate habits that
  *   are scheduled today vs not if necessary
  */
-function updateHabitUI(){
-    var habits = getAllHabits();
+function updateHabitUI(habits){
     var listItem;  //type is HTML ListItem
     var list = document.getElementById('habit-list');
     var habit;
     var othersExist = false;
     for (var i = 0; i < habits.length; i++){
         habit = habits[i];
-		if(todayIsUpdateDay(habit)){
+        if(todayIsUpdateDay(habit)){
             listItem = makeHtmlElement(habit);
             list.appendChild(listItem);
-		}
-		else{
-		    othersExist = true;
-		}
+        }
+        else{
+            othersExist = true;
+        }
     }
     
     if(othersExist){
         //Make the separation between habits scheduled for today and those not
         list.appendChild(makeSeparatorElement());
         
-        for (var i = 0; i < habits.length; i++){
+        for (i = 0; i < habits.length; i++){
             habit = habits[i];
             if(!todayIsUpdateDay(habit)){
                 listItem = makeHtmlElement(habit);
@@ -83,7 +106,19 @@ function updateHabitUI(){
     JSON.parse(localStorage.getItem("Habits"));
 }
 
-updateHabitUI();
+var Habit = Parse.Object.extend("Habit");
+var query = new Parse.Query(Habit);
+var habits;
+query.equalTo('owner', Parse.User.current().id);
+query.find({
+    success: function(h){
+        habits = h;
+        updateHabitUI(h);
+    }, error: function(error){
+        if(error.code != 100)//for spaming f5
+            alert(error.message);
+    }
+});
 
 /*
  *  makeSeparatorElement()
@@ -92,7 +127,7 @@ updateHabitUI();
  */
 function makeSeparatorElement(){
     var separator = document.createElement('li');
-    separator.innerHTML = '<h1> Other Habits </h1>'
+    separator.innerHTML = '<h1>Other Habits</h1>';
     //Couldn't get it to work in CSS file so manually here
     separator.id = "separator";
     separator.style.height = '50px';
@@ -106,8 +141,9 @@ function makeSeparatorElement(){
 //so on page load it draws everything
 
 function isInt(data){
-    if (data != parseInt(data, 10))
+    if (data != parseInt(data, 10)){
         return false;
+    }
     data = parseInt(data, 10);
     if (data < 1){
         return false;
@@ -127,41 +163,50 @@ function makeHtmlElement(habit){
     var elementTemplate = document.getElementById('template').innerHTML;
     listItem.innerHTML = elementTemplate;
 
-    //Title
-    listItem.getElementsByClassName("habit-name")[0].innerHTML = habit.title;
+    if(habit.get('firstFlurry')){//anyas transition effect
+        listItem.className = "new-item";
+        habit.set('firstFlurry', false);
+        habit.save()
+    }
+   //Title
+    listItem.getElementsByClassName("habit-name")[0].innerHTML = habit.get('title');
 
     //Image
     imageElement = listItem.getElementsByClassName("habit-icon")[0];
 
-    if (isInt(habit.image)){
-        imageElement.src = '../img/icon' + habit.image + '.jpg';
+    image = habit.get('image');
+    if (isInt(image)){
+        imageElement.src = '../img/icon' + image + '.jpg';
     }else{
-       imageElement.src = "data:image/png;base64," + habit.image;
+       imageElement.src = "data:image/png;base64," + image;
     }
     //imageElement.width = 100;
     //imageElement.width = 100;
     //imageElement.style.maxheight = "100px";
     //imageElement.style.maxwidth = "100px";
-    listItem.getElementsByClassName("habit-name")[0].innerHTML.alt = habit.image.substring(habit.image.lastIndexOf("/")+1);
-    //Statss
-    listItem.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.currentStreak;
-    listItem.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.bestRecord;
 
-    listItem.getElementsByClassName("op op-edit")[0].onclick = function onclick(event) {location.href='add.html?id='+habit.id;}
+    //not usre if this is needed anymore
+    //listItem.getElementsByClassName("habit-name")[0].innerHTML.alt = habit.image.substring(habit.image.lastIndexOf("/")+1);
+
+    //Statss
+    listItem.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.get('currentStreak');
+    listItem.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.get('bestRecord');
+
+    listItem.getElementsByClassName("op op-edit")[0].onclick = function onclick(event) {location.href='add.html?id='+habit.id;};
 
     setCompletionText(listItem, habit);
     setMeter(listItem, habit);
 
-    if(!todayIsUpdateDay(habit)){
-        showCompleteButton(listItem, true);
-    }
-    else{
-        showCompleteButton(listItem, false);
-    }
-    
-    if(completedHabit(habit)){
+    if(todayIsUpdateDay(habit) && completedHabit(habit)){
         showTodaysCompletions(listItem);
-        showCompleteButton(listItem, false);
+        showCompleteButton(listItem,true);
+    }
+    else if (todayIsUpdateDay(habit) && !completedHabit(habit)){
+        showTodaysCompletions(listItem);
+        showCompleteButton(listItem,false);
+    }   
+    else{
+        showCompleteButton(listItem,true);
     }
     return listItem;
 }
@@ -172,9 +217,9 @@ function makeHtmlElement(habit){
  *   completing a habit for today
  */
 function setCompletionText(listElement, habit){
-    listElement.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.currentStreak;
-    listElement.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.bestRecord; 
-    listElement.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habit.ticks+"/"+habit.dailyFreq;
+    listElement.getElementsByClassName("message-total")[0].children[0].innerHTML = habit.get('currentStreak');
+    listElement.getElementsByClassName("message-total")[0].children[1].innerHTML = habit.get('bestRecord'); 
+    listElement.getElementsByClassName("message-today")[0].children[0].innerHTML = ""+habit.get('ticks')+"/"+habit.get('dailyFreq');
 }
 
 /*
@@ -187,7 +232,7 @@ function todayIsUpdateDay(habit){
     var day = date.getDay();
     date = null;
     //if you didn't select today as a day that you shouldn't update your habits
-    if (habit.weekFreq[day] === 0){  
+    if (habit.get('weekFreq')[day] === 0){  
         return false;
     }
     return true;
@@ -209,7 +254,7 @@ function showTodaysCompletions(listElement){
  *   Return boolean
  */
 function completedHabit(habit){
-    return habit.ticks == habit.dailyFreq;
+    return habit.get('ticks') == habit.get('dailyFreq');
 }
 
 /*
@@ -239,8 +284,8 @@ function setMeter(listItem, habit){
     var max = parseFloat(line2.getAttribute('x2'));
 
     //var fractionToBest = habit.bestRecord === 0 ? 0.0 : (habit.currentStreak * max)/habit.bestRecord;
-    var tickProgToday = max * (habit.ticks/habit.dailyFreq);
-    
+    var tickProgToday = max * (habit.get('ticks')/habit.get('dailyFreq'));
+
     line1.setAttribute('x2', tickProgToday);
     line2.setAttribute('x1', tickProgToday);
 }
@@ -253,16 +298,17 @@ function setMeter(listItem, habit){
  */
 function completeHabit(id_param){
     var listElement = getHabitElement(id_param);
-    var habitC = getHabitById(parseInt(listElement.id));
-
-    if(habitC.ticks < habitC.dailyFreq){//If already there do nothing
-        habitC.ticks = habitC.ticks + 1;
-		if(completedHabit(habitC) && todayIsUpdateDay(habitC)){
-		    habitC.currentStreak = 1 + habitC.currentStreak;
-		}
-		if(habitC.currentStreak > habitC.bestRecord){
-		    habitC.bestRecord = habitC.currentStreak;
-		}
+    var habitC = getHabitById(listElement.id);
+    mixpanel.track('complete my habit');
+    if(habitC.get('ticks') < habitC.get('dailyFreq')){//If already there do nothing
+        habitC.increment('ticks');
+        if(completedHabit(habitC) && todayIsUpdateDay(habitC)){
+            habitC.increment('currentStreak');
+        }
+        if(habitC.get('currentStreak') > habitC.get('bestRecord')){
+            habitC.set('bestRecord', habitC.get('currentStreak'));
+        }
+        showCompleteButton(listElement, true);
     }
    updateHabit(habitC);
    setCompletionText(listElement, habitC);
@@ -287,24 +333,28 @@ function getHabitElement(clickElement){
 function onDeletePress(id_param){
     //show yes and no
     var listElement = getHabitElement(id_param);
-    listElement.className = "removed-item";
-    listElement.getElementsByClassName("replace")[0].innerHTML = "<div class='para' style='color:#888;display:inline'>Are you sure? \
-                    <button type='button' class='yesbtn op-yesbtn op-del' style='color:white;font-size:16px'>Yes</button>  \
-                    <button type='button' class='nobtn op-yesbtn op-done' style='color:white;font-size:16px'>No</button></div>";  
+    mixpanel.track('try to delete habit');
+    listElement.getElementsByClassName("replace")[0].innerHTML = "<div class='para' style='color:#888;display:inline'>Are you sure? <button type='button' class='yesbtn op-yesbtn op-del' style='color:white;font-size:16px'>Yes</button><button type='button' class='nobtn op-yesbtn op-done' style='color:white;font-size:16px'>No</button></div>";  
 
-   // if delete, delete
+
+    // if delete, delete
     var yb = listElement.getElementsByClassName('yesbtn')[0];
+
     yb.onclick = function () {
-        var listItem = id_param.parentNode.parentNode;
-        var listContainer = listItem.parentNode;
+        listElement.className = "removed-item";
+        setTimeout(fun, 1000);
+            function fun() {
+            var listItem = id_param.parentNode.parentNode;
+            var listContainer = listItem.parentNode;
 
-        var id = listItem.id;
+            var id = listItem.id;
 
-        deleteHabit(id);
-        listContainer.removeChild(listItem); 
-        if(listContainer.children[(listContainer.children.length)-1].id === "separator")
-            listContainer.removeChild(listContainer.children[(listContainer.children.length)-1]);
-    }
+            deleteHabit(id);
+            listContainer.removeChild(listItem); 
+            if(listContainer.children[(listContainer.children.length)-1].id === "separator")
+                listContainer.removeChild(listContainer.children[(listContainer.children.length)-1]);
+            }
+    };
 
     // if no delete, put back delete button
     var nb = listElement.getElementsByClassName('nobtn')[0];
@@ -312,7 +362,7 @@ function onDeletePress(id_param){
         listElement.getElementsByClassName('nobtn')[0].remove();
         listElement.getElementsByClassName('yesbtn')[0].remove();
         listElement.getElementsByClassName('para')[0].innerHTML = "<p class='replace' style='display:inline'></p>";
-    }    
+    } ;   
 }
 
 /*
@@ -320,41 +370,20 @@ function onDeletePress(id_param){
  *   Deleting the habit instance from our database. Called from onDeletePress 
  */
 function deleteHabit(habitId){
-    var habits = getAllHabits();
-    habitId = parseInt(habitId);
-    var habit;
+    var habit = getHabitById(habitId);
     for (var i = 0; i < habits.length; i++){
         habit = habits[i];
         if (habitId === habit.id){
-            habits.splice(i, 1);
+            habit.destroy({ 
+                success: function(o){
+                    habits.splice(i, 1);
+                }, 
+                error: function(o, e){
+                    alert(e.message);
+                }});
             break;
         }
     }
     localStorage.setItem("Habits", JSON.stringify(habits));
-}
 
-function notifyMe() {
-  // Let's check if the browser supports notifications
-  if (!("Notification" in window)) {
-    alert("This browser does not support desktop notification");
-  }
-
-  // Let's check whether notification permissions have already been granted
-  else if (Notification.permission === "granted") {
-    // If it's okay let's create a notification
-    var notification = new Notification("Hi there!");
-  }
-
-  // Otherwise, we need to ask the user for permission
-  else if (Notification.permission !== 'denied') {
-    Notification.requestPermission(function (permission) {
-      // If the user accepts, let's create a notification
-      if (permission === "granted") {
-        var notification = new Notification("Hi there!");
-      }
-    });
-  }
-
-  // At last, if the user has denied notifications, and you 
-  // want to be respectful there is no need to bother them any more.
 }
