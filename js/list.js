@@ -131,7 +131,7 @@ query.find({
                 var i;
                 for(i = 0; i < habits.length; i++){
                     habits[i].set('ticks', 0);
-                    habits[i].set('lastAccessed', today.toSring());
+                    habits[i].set('lastAccessed', today.toString());
                     updateHabit(habits[i]);
                 }
             }
@@ -330,11 +330,15 @@ function nextDate(date, weekArr){
 
     var i;
     for(i = 0; i < counter; i++){
-        var millisSince = date.getTime();
-        millisSince += millisInDay;
+        var millisSince = date.getTime(); //millis since 1970
+        millisSince += millisInDay;// add 25 hours
         date = zeroOut(millisSince.toString())
     }
-    return date;
+    var ret = {
+        date: date,
+        counter: counter
+    };
+    return ret;
 }
 
 /*
@@ -354,13 +358,17 @@ function completeHabit(id_param){
 
             var today = zeroOutDate("");
 
-            if (nextDate(lastDate, habitC.get('weekFreq')) == today){
-                habitC.increment('currentStreak');
-                habitC.set('dateSuccess', today.toSring());
+            var nextDateFunc = nextDate(lastDate, habitC.get('weekFreq'));
+            var nextDate = nextDateFunc.date;
+            var streakCount = nextDateFunc.counter;
+
+            if (nextDate == today){
+                habitC.set('currentStreak', habitC.get('currentStreak') + streakCount);//
+                habitC.set('dateSuccess', today.toString());
             }
             else{
-                habitC.set('currentStreak', 1);
-                habitC.set('dateSuccess', today.toSring());
+                habitC.set('currentStreak', streakCount);
+                habitC.set('dateSuccess', today.toString());
             }
         }
         if(habitC.get('currentStreak') > habitC.get('bestRecord')){
