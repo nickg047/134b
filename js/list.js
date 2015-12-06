@@ -106,6 +106,16 @@ function updateHabitUI(habits){
     JSON.parse(localStorage.getItem("Habits"));
 }
 
+function zeroOutDate(dateString){
+    var date = Date(dateString);
+    date.setMilliseconds(0);
+    date.setSeconds(0);
+    date.setMinutes(0);
+    date.setHours(0);
+
+    return date;
+}
+
 var Habit = Parse.Object.extend("Habit");
 var query = new Parse.Query(Habit);
 var habits;
@@ -113,6 +123,19 @@ query.equalTo('owner', Parse.User.current().id);
 query.find({
     success: function(h){
         habits = h;
+        if(habits.length != 0){
+            var habit = habits[0];
+            var today = zeroOutDate('');
+            var lastAccessed = zeroOutDate(habit.get('dateAccessed'));
+            if(today != lastAccessed){
+                var i;
+                for(i = 0; i < habits.length; i++){
+                    habits[i].set('ticks', 0);
+                    habits[i].set('lastAccessed', today.toSring());
+                    updateHabit(habits[i]);
+                }
+            }
+        }
         updateHabitUI(h);
     }, error: function(error){
         if(error.code != 100)//for spaming f5
@@ -289,6 +312,30 @@ function setMeter(listItem, habit){
     line1.setAttribute('x2', tickProgToday);
     line2.setAttribute('x1', tickProgToday);
 }
+/*
+date is a javascript object.  its already at midnight, so adding 25 hours will only increment it by one day
+weekArr is an array of 0s and 1s  length 7 representing which weekdays we need
+*/
+function nextDate(date, weekArr){
+    var millisInDay = 1000 * 60 * 60 * 25; //want 25 to make sure we tip it over
+
+    var counter;
+    var day = date.getDay() + 1;
+    for(counter = 0; counter < weekArr.length; i++, day++){
+        day = day % 7;
+        if (weekArr[day]){
+            break;
+        }
+    }
+
+    var i;
+    for(i = 0; i < counter; i++){
+        var millisSince = date.getTime();
+        millisSince += millisInDay;
+        date = zeroOut(millisSince.toString())
+    }
+    return date;
+}
 
 /*
  *  completeHabit(id_param)
@@ -303,23 +350,17 @@ function completeHabit(id_param){
     if(habitC.get('ticks') < habitC.get('dailyFreq')){//If already there do nothing
         habitC.increment('ticks');
         if(completedHabit(habitC) && todayIsUpdateDay(habitC)){
-            var lastDate = new Date(habitC.get('date'));
-            lastDate.setMilliseconds(0);
-            lastDate.setSeconds(0);
-            lastDate.setMinutes(0);
-            lastDate.setHours(0);
-            var today = new Date();
-            today.setMilliseconds(0);
-            today.setSeconds(0);
-            today.setMinutes(0);
-            today.setHours(0);
-            if (lastDate < today){
+            var lastDate = zeroOutDate(habitC.get('dateSuccess'));
+
+            var today = zeroOutDate("");
+
+            if (nextDate(lastDate, habitC.get('weekFreq')) == today){
                 habitC.increment('currentStreak');
-                habitC.set('date', today.toSring());
+                habitC.set('dateSuccess', today.toSring());
             }
             else{
-                habitC.set('currentStreak', 0);
-                habitC.set('date', today.toSring());
+                habitC.set('currentStreak', 1);
+                habitC.set('dateSuccess', today.toSring());
             }
         }
         if(habitC.get('currentStreak') > habitC.get('bestRecord')){

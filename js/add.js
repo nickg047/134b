@@ -219,11 +219,17 @@ function save(habit){
         //don't need to do anything, its an edit
     }
 
-    if(!habit.get('date')){
-        habit.set('date', new Date().toString());
+    if(!habit.get('dateSuccess')){
+        habit.set('dateSuccess', new Date().toString());
     }else{
         //don't need to do anything, its an edit
     }
+    if(!habit.get('dateAccessed')){
+        habit.set('dateAccessed', new Date().toString());
+    }else{
+        //don't need to do anything, its an edit
+    }
+    if(!habit.get(''))
     return habit;
 }
 
