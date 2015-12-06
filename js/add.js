@@ -220,16 +220,15 @@ function save(habit){
     }
 
     if(!habit.get('dateSuccess')){
-        habit.set('dateSuccess', new Date().toString());
+        habit.set('dateSuccess', new Date().toDateString());
     }else{
         //don't need to do anything, its an edit
     }
     if(!habit.get('dateAccessed')){
-        habit.set('dateAccessed', new Date().toString());
+        habit.set('dateAccessed', new Date().toDateString());
     }else{
         //don't need to do anything, its an edit
     }
-    if(!habit.get(''))
     return habit;
 }
 

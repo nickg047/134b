@@ -51,7 +51,7 @@ function getHabitById1(habitId){
 function updateHabit(habitToUpdate){
     habitToUpdate.save(null, {
         success: function(habit){
-
+            //alert('saved');
         }, error: function(o, error){
             alert(error.message);
         }
@@ -107,9 +107,9 @@ function updateHabitUI(habits){
 }
 
 function zeroOutDate(dateString){
-    var date = Date(dateString);
-    date.setMilliseconds(0);
+    var date = new Date(dateString);
     date.setSeconds(0);
+    date.setMilliseconds(0);
     date.setMinutes(0);
     date.setHours(0);
 
@@ -125,13 +125,13 @@ query.find({
         habits = h;
         if(habits.length != 0){
             var habit = habits[0];
-            var today = zeroOutDate('');
+            var today = zeroOutDate(new Date().toDateString());
             var lastAccessed = zeroOutDate(habit.get('dateAccessed'));
-            if(today != lastAccessed){
+            if(today.getTime() != lastAccessed.getTime()){
                 var i;
                 for(i = 0; i < habits.length; i++){
                     habits[i].set('ticks', 0);
-                    habits[i].set('lastAccessed', today.toString());
+                    habits[i].set('dateAccessed', today.toDateString());
                     updateHabit(habits[i]);
                 }
             }
@@ -277,7 +277,7 @@ function showTodaysCompletions(listElement){
  *   Return boolean
  */
 function completedHabit(habit){
-    return habit.get('ticks') == habit.get('dailyFreq');
+    return habit.get('ticks') >= habit.get('dailyFreq');
 }
 
 /*
@@ -316,30 +316,6 @@ function setMeter(listItem, habit){
 date is a javascript object.  its already at midnight, so adding 25 hours will only increment it by one day
 weekArr is an array of 0s and 1s  length 7 representing which weekdays we need
 */
-function nextDate(date, weekArr){
-    var millisInDay = 1000 * 60 * 60 * 25; //want 25 to make sure we tip it over
-
-    var counter;
-    var day = date.getDay() + 1;
-    for(counter = 0; counter < weekArr.length; i++, day++){
-        day = day % 7;
-        if (weekArr[day]){
-            break;
-        }
-    }
-
-    var i;
-    for(i = 0; i < counter; i++){
-        var millisSince = date.getTime(); //millis since 1970
-        millisSince += millisInDay;// add 25 hours
-        date = zeroOut(millisSince.toString())
-    }
-    var ret = {
-        date: date,
-        counter: counter
-    };
-    return ret;
-}
 
 /*
  *  completeHabit(id_param)
@@ -356,30 +332,56 @@ function completeHabit(id_param){
         if(completedHabit(habitC) && todayIsUpdateDay(habitC)){
             var lastDate = zeroOutDate(habitC.get('dateSuccess'));
 
-            var today = zeroOutDate("");
+            var today = zeroOutDate(new Date().toDateString());
 
             var nextDateFunc = nextDate(lastDate, habitC.get('weekFreq'));
-            var nextDate = nextDateFunc.date;
+            var next_date = nextDateFunc.date;
             var streakCount = nextDateFunc.counter;
 
-            if (nextDate == today){
+            if (next_date.getTime() == today.getTime()){
                 habitC.set('currentStreak', habitC.get('currentStreak') + streakCount);//
-                habitC.set('dateSuccess', today.toString());
+                habitC.set('dateSuccess', today.toDateString());
             }
             else{
                 habitC.set('currentStreak', streakCount);
-                habitC.set('dateSuccess', today.toString());
+                habitC.set('dateSuccess', today.toDateString());
             }
+            showCompleteButton(listElement, true);
         }
         if(habitC.get('currentStreak') > habitC.get('bestRecord')){
             habitC.set('bestRecord', habitC.get('currentStreak'));
         }
-        //showCompleteButton(listElement, true);
     }
    updateHabit(habitC);
    setCompletionText(listElement, habitC);
    setMeter(listElement, habitC);
    showTodaysCompletions(listElement);
+}
+
+function nextDate(date, weekArr){
+    console.log(weekArr);
+    var millisInDay = 1000 * 60 * 60 * 25; //want 25 to make sure we tip it over
+
+    var counter;
+    var day = date.getDay() + 1;
+    for(counter = 1; counter < weekArr.length + 1; day++, counter++){
+        day = day % 7;
+        if (weekArr[day]){
+            break;
+        }
+    }
+
+    var i;
+    for(i = 0; i < counter; i++){
+        var millisSince = date.getTime(); //millis since 1970
+        millisSince += millisInDay;// add 25 hours
+        date = zeroOutDate(new Date(millisSince).toDateString());
+    }
+    var ret = {
+        date: date,
+        counter: counter
+    };
+    return ret;
 }
 
 /*
